@@ -5,13 +5,14 @@
 #include "csv_reader.h"
 
 #define MAX_SARAKE 30
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Käyttö: %s <tiedostonimi.csv>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    const char *tiedostonimi = argv[1]; // Muutettu char* const char* -muotoon
+    const char *tiedostonimi = argv[1];
     Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
     Rivi **rivit = alusta_rivit(tiedostonimi);
     struct Node *root = NULL;
@@ -30,22 +31,26 @@ int main(int argc, char *argv[]) {
         root = insertNode(root, rivit[i]->arvot[0]);
     }
 
-    printf("Preorder-traversaali:\n");
-    printPreOrder(root);
-    printf("\n");
-
-    // Vapautetaan varatut muistialueet
-    for (int i = 0; i < valinta; i++) {
-        for (int j = 0; j < MAX_SARAKE; j++) { // Korjattu MAX_SARAKE
-            free(rivit[i]->arvot[j]);
+    // Function to print AVL tree in preorder traversal
+    void printPreOrder(struct Node *root) {
+        if (root != NULL) {
+            printf("%s ", root->nimi);
+            printPreOrder(root->left);
+            printPreOrder(root->right);
         }
-        free(rivit[i]);
     }
-    free(rivit);
-    
-    freeAVL(root);
-    free(sarakkeet);
 
-    return 0;
+    // Funktio vapauttaa AVL-puun muistin rekursiivisesti
+    void vapauta_puu(struct Node *node) {
+        if (node == NULL) return;
+
+        // Vapautetaan vasen ja oikea alipuu
+        vapauta_puu(node->left);
+        vapauta_puu(node->right);
+
+        // Vapautetaan solmu itse
+        free(node);
+    }
+
+    return 0; // Lisätty return-lause
 }
-
