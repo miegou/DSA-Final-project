@@ -26,7 +26,7 @@ void lue_csv_tiedosto(const char *tiedostonimi) {
 
         // Tulosta sarakkeet
         for (int i = 0; i < sarakkeiden_lkm; i++) {
-            printf("%s\t", sarake[i]);
+            printf("%s,", sarake[i]);
         }
         printf("\n");
     }
