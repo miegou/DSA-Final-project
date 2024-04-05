@@ -178,7 +178,7 @@ void printPreOrder(struct Node *root) {
         printPreOrder(root->left);
         printPreOrder(root->right);
     }
-
+}
 
 // Funktio vapauttaa AVL-puun muistin rekursiivisesti
 void vapauta_puu(struct Node *node) {
@@ -190,6 +190,4 @@ void vapauta_puu(struct Node *node) {
 
     // Vapautetaan solmu itse
     free(node);
-}
-
 }

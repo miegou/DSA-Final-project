@@ -67,7 +67,7 @@ Rivi *alusta_rivi(char *rivi_str, Sarake *sarakkeet) {
     int sarake_indeksi = 0;
     while (token != NULL && sarake_indeksi < MAX_SARAKE) {
         // Tulostetaan token ennen tallentamista
-        printf("Token: %s\n", token);
+       // printf("Token: %s\n", token);
         uusi_rivi->arvot[sarake_indeksi] = strdup(token);
         sarake_indeksi++;
         token = strtok(NULL, ",");
