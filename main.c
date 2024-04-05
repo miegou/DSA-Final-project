@@ -42,6 +42,14 @@ int main(int argc, char *argv[]) {
     // printf("Vertailuarvon mukainen lista:\n");
     // tulosta_vertailuarvolla(root, vertailtava);
 
+    // Tulosta ensimmäisen solmun otsikko ja arvo
+    if (root != NULL) {
+        printf("Ensimmäisen solmun otsikko: %s\n", sarakkeet[0].nimi);
+        printf("Ensimmäisen solmun arvo: %s\n", root->nimi);
+    } else {
+        printf("Puussa ei ole solmuja\n");
+    }
+
     // Free memory of AVL tree
     freeAVL(root);
 

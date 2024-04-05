@@ -40,41 +40,41 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     }
 
     // Luetaan sarakkeiden nimet neljänneltä riviltä
-    char rivi[MAX_RIVI_PITUUS];
-    fgets(rivi, sizeof(rivi), tiedosto);
-    char *token = strtok(rivi, ",");
-    while (token != NULL) {
+char rivi[MAX_RIVI_PITUUS];
+fgets(rivi, sizeof(rivi), tiedosto); // Luetaan rivi tiedostosta
+char *token = strtok(rivi, ","); // Erota rivin osat pilkulla
+while (token != NULL) {
     printf("Sarake nimi: %s\n", token); // Tulostetaan sarakkeen nimi ennen tallentamista
-    strcpy(sarakkeet[sarakkeiden_lkm].nimi, token);
-    sarakkeiden_lkm++;
-    token = strtok(NULL, ",");
+    strcpy(sarakkeet[sarakkeiden_lkm].nimi, token); // Tallenna sarakkeen nimi
+    sarakkeiden_lkm++; // Siirry seuraavaan sarakkeeseen
+    token = strtok(NULL, ","); // Hae seuraava token
 }
 
-    fclose(tiedosto);
-    return sarakkeet;
+fclose(tiedosto); // Sulje tiedosto
+return sarakkeet; // Palauta alustetut sarakkeet
 }
 
 // Muokattu funktio rivin alustamiseen
 Rivi *alusta_rivi(char *rivi_str, Sarake *sarakkeet) {
-    Rivi *uusi_rivi = malloc(sizeof(Rivi));
+    Rivi *uusi_rivi = malloc(sizeof(Rivi)); // Alusta uusi rivirakenne
     if (uusi_rivi == NULL) {
-        perror("Muistin varaaminen epäonnistui");
-        exit(EXIT_FAILURE);
+        perror("Muistin varaaminen epäonnistui"); // Tulosta virheilmoitus
+        exit(EXIT_FAILURE); // Lopeta ohjelma virheellä
     }
 
     // Erotellaan rivin arvot ja tallennetaan ne uusiin arvoihin
-    char *token = strtok(rivi_str, ",");
+    char *token = strtok(rivi_str, ","); // Erota rivin osat pilkulla
     int sarake_indeksi = 0;
     while (token != NULL && sarake_indeksi < MAX_SARAKE) {
-        // Tulostetaan token ennen tallentamista
-       // printf("Token: %s\n", token);
+        // Tallenna arvo rivin rakenteeseen
         uusi_rivi->arvot[sarake_indeksi] = strdup(token);
-        sarake_indeksi++;
-        token = strtok(NULL, ",");
+        sarake_indeksi++; // Siirry seuraavaan sarakkeeseen
+        token = strtok(NULL, ","); // Hae seuraava token
+    }
+
+    return uusi_rivi; // Palauta alustettu rivi
 }
 
-        return uusi_rivi;
-}
 
 
 // Muokattu funktio rivien alustamiseen
