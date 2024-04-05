@@ -180,14 +180,35 @@ void printPreOrder(struct Node *root) {
     }
 }
 
-// Funktio vapauttaa AVL-puun muistin rekursiivisesti
-void vapauta_puu(struct Node *node) {
+// Function to print AVL tree in inorder traversal (alphabetical order)
+void printInOrder(struct Node *root) {
+    if (root != NULL) {
+        printInOrder(root->left);
+        printf("%s ", root->nimi);
+        printInOrder(root->right);
+    }
+}
+
+void freeAVL(struct Node *node) {
     if (node == NULL) return;
 
-    // Vapautetaan vasen ja oikea alipuu
-    vapauta_puu(node->left);
-    vapauta_puu(node->right);
+    // Free left and right subtrees
+    freeAVL(node->left);
+    freeAVL(node->right);
 
-    // Vapautetaan solmu itse
+    // Free the node itself
     free(node);
+}
+
+// Function to print the contents of a single AVL tree node
+void printNode(struct Node *node) {
+    if (node != NULL) {
+        printf("Node Content:\n");
+        printf("Nimi: %s\n", node->nimi);
+        printf("Left Child: %p\n", (void *)node->left);
+        printf("Right Child: %p\n", (void *)node->right);
+        printf("Height: %d\n", node->height);
+    } else {
+        printf("Node is NULL\n");
+    }
 }

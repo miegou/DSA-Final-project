@@ -4,11 +4,8 @@
 #include "avl.h"
 #include "csv_reader.h"
 
-#define MAX_SARAKE 30
-int main(int argc, char *argv[])
-{
-    if (argc != 2)
-    {
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
         fprintf(stderr, "Käyttö: %s <tiedostonimi.csv>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
@@ -23,37 +20,30 @@ int main(int argc, char *argv[])
     int valinta;
     printf("Montako riviä haluat lukea tiedostosta? (enintään %d)\n", rivien_lkm);
     scanf("%d", &valinta);
-    if (valinta > rivien_lkm || valinta < 1)
-    {
+    if (valinta > rivien_lkm || valinta < 1) {
         fprintf(stderr, "Virheellinen syöte.\n");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < valinta; i++)
-    {
+    for (int i = 0; i < valinta; i++) {
         root = insertNode(root, rivit[i]->arvot[0]);
     }
 
-    // Function to print AVL tree in preorder traversal
-    void printPreOrder(struct Node *root) {
-        if (root != NULL) {
-            printf("%s ", root->nimi);
-            printPreOrder(root->left);
-            printPreOrder(root->right);
-        }
-    }
+    // Print the content of the first node in the AVL tree
+    printf("Yhden solmun sisältö:\n");
+    printNode(root);
 
-    // Funktio vapauttaa AVL-puun muistin rekursiivisesti
-    void vapauta_puu(struct Node *node) {
-        if (node == NULL) return;
+    //     // Kysytään käyttäjältä millä arvolla halutaan vertailla puuta
+    // char vertailtava[MAX_RIVI_PITUUS];
+    // printf("Anna arvo, jolla haluat vertailla puuta: ");
+    // scanf("%s", vertailtava);
 
-        // Vapautetaan vasen ja oikea alipuu
-        vapauta_puu(node->left);
-        vapauta_puu(node->right);
+    // // Tulostetaan listan vertailuarvon mukainen lista
+    // printf("Vertailuarvon mukainen lista:\n");
+    // tulosta_vertailuarvolla(root, vertailtava);
 
-        // Vapautetaan solmu itse
-        free(node);
-    }
+    // Free memory of AVL tree
+    freeAVL(root);
 
-    return 0; // Lisätty return-lause
+    return 0;
 }
