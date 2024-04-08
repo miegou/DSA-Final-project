@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     // Print the content of the first node in the AVL tree
     printf("Yhden solmun sisältö:\n");
     printNode(root);
-
+    printInOrder(root);
     // Free memory of AVL tree
     freeAVL(root);
 
