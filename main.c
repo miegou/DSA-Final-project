@@ -4,6 +4,7 @@
 #include "avl.h"
 #include "csv_reader.h"
 
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Käyttö: %s <tiedostonimi.csv>\n", argv[0]);
@@ -12,8 +13,13 @@ int main(int argc, char *argv[]) {
 
     const char *tiedostonimi = argv[1];
     Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
-    Rivi **rivit = alusta_rivit(tiedostonimi);
+    Rivi **rivit = alusta_rivit(tiedostonimi, sarakkeet);
     struct Node *root = NULL;
+
+    int sarakkeiden_lkm = 0;
+    while (sarakkeet[sarakkeiden_lkm].nimi[0] != '\0') {
+        sarakkeiden_lkm++;
+    }
 
     int rivien_lkm = laske_rivien_lkm(tiedostonimi);
 
@@ -25,33 +31,38 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    // Tulosta sarakkeiden nimet käyttäjälle
+    printf("Valitse vertailuarvo sarakkeen perusteella:\n");
+    for (int i = 0; i < sarakkeiden_lkm; i++) {
+        printf("%d. %s\n", i + 1, sarakkeet[i].nimi);
+    }
+
+    // Pyydä käyttäjää valitsemaan sarakkeen numero
+    printf("Anna sarakkeen numero, jolla haluat vertailla puuta: ");
+    scanf("%d", &valinta);
+
+    // Tarkista, että käyttäjän antama valinta on kelvollinen
+    if (valinta < 1 || valinta > sarakkeiden_lkm) {
+        fprintf(stderr, "Virheellinen syöte.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Valitse vertailuarvo valitun sarakkeen perusteella
+    char vertailuarvo[MAX_RIVI_PITUUS];
+    strcpy(vertailuarvo, sarakkeet[valinta - 1].nimi);
+
+    // Lisää solmut puuhun valitun vertailuarvon perusteella
     for (int i = 0; i < valinta; i++) {
-        root = insertNode(root, rivit[i]->arvot[0]);
+        root = insertNode(root, rivit[i], sarakkeet, sarakkeiden_lkm, vertailuarvo);
     }
 
     // Print the content of the first node in the AVL tree
     printf("Yhden solmun sisältö:\n");
     printNode(root);
 
-    //     // Kysytään käyttäjältä millä arvolla halutaan vertailla puuta
-    // char vertailtava[MAX_RIVI_PITUUS];
-    // printf("Anna arvo, jolla haluat vertailla puuta: ");
-    // scanf("%s", vertailtava);
-
-    // // Tulostetaan listan vertailuarvon mukainen lista
-    // printf("Vertailuarvon mukainen lista:\n");
-    // tulosta_vertailuarvolla(root, vertailtava);
-
-    // Tulosta ensimmäisen solmun otsikko ja arvo
-    if (root != NULL) {
-        printf("Ensimmäisen solmun otsikko: %s\n", sarakkeet[0].nimi);
-        printf("Ensimmäisen solmun arvo: %s\n", root->nimi);
-    } else {
-        printf("Puussa ei ole solmuja\n");
-    }
-
     // Free memory of AVL tree
     freeAVL(root);
 
     return 0;
 }
+

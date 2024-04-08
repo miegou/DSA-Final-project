@@ -3,20 +3,26 @@
 
 #include "csv_reader.h"
 
-struct Node {
-    char nimi[MAX_RIVI_PITUUS];
+
+// Node struct
+typedef struct Node {
+    Rivi *rivi;
+    Sarake *sarakkeet;
+    int sarakkeiden_lkm;
     struct Node *left;
     struct Node *right;
     int height;
-};
+} Node;
 
-struct Node *newNode(char *nimi);
+
+struct Node *newNode(Rivi *rivi, Sarake *sarakkeet, int sarakkeiden_lkm);
+
 struct Node *rightRotate(struct Node *y);
 struct Node *leftRotate(struct Node *x);
 int height(struct Node *N);
 int max(int a, int b);
 int getBalance(struct Node *N);
-struct Node *insertNode(struct Node *node, char nimi[MAX_RIVI_PITUUS]);
+struct Node *insertNode(struct Node *node, Rivi *rivi, Sarake *sarakkeet, int sarakkeiden_lkm, char *vertailuarvo);
 void printPreOrder(struct Node *root);
 struct Node *minValueNode(struct Node *node);
 struct Node *deleteNode(struct Node *root, char nimi[MAX_RIVI_PITUUS]);

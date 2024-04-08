@@ -1,20 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_RIVI_PITUUS 12000
-#define MAX_SARAKE 30 // Oletetaan, että on enintään 30 saraketta
-
-// Rakenne yksittäiselle sarakkeelle
-typedef struct {
-    char nimi[MAX_RIVI_PITUUS];
-} Sarake;
-
-// Rakenne yksittäiselle riville
-typedef struct {
-    char *arvot[MAX_SARAKE];
-    Sarake sarakkeet[MAX_SARAKE]; // Sarakkeiden nimet
-} Rivi;
+#include "csv_reader.h"
 
 // Funktio sarakkeiden alustamiseen
 Sarake *alusta_sarakkeet(const char *tiedostonimi) {
@@ -25,7 +12,7 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     }
 
     // Alustetaan sarakkeet-taulukko
-    Sarake *sarakkeet = malloc(MAX_SARAKE * sizeof(Sarake));
+    Sarake *sarakkeet = malloc(MAX_SARAKKEET * sizeof(Sarake));
     if (sarakkeet == NULL) {
         fprintf(stderr, "Muistin varaus epäonnistui\n");
         exit(EXIT_FAILURE);
@@ -40,18 +27,18 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     }
 
     // Luetaan sarakkeiden nimet neljänneltä riviltä
-char rivi[MAX_RIVI_PITUUS];
-fgets(rivi, sizeof(rivi), tiedosto); // Luetaan rivi tiedostosta
-char *token = strtok(rivi, ","); // Erota rivin osat pilkulla
-while (token != NULL) {
-    printf("Sarake nimi: %s\n", token); // Tulostetaan sarakkeen nimi ennen tallentamista
-    strcpy(sarakkeet[sarakkeiden_lkm].nimi, token); // Tallenna sarakkeen nimi
-    sarakkeiden_lkm++; // Siirry seuraavaan sarakkeeseen
-    token = strtok(NULL, ","); // Hae seuraava token
-}
+    char rivi[MAX_RIVI_PITUUS];
+    fgets(rivi, sizeof(rivi), tiedosto); // Luetaan rivi tiedostosta
+    char *token = strtok(rivi, ","); // Erota rivin osat pilkulla
+    while (token != NULL) {
+        printf("Sarake nimi: %s\n", token); // Tulostetaan sarakkeen nimi ennen tallentamista
+        strcpy(sarakkeet[sarakkeiden_lkm].nimi, token); // Tallenna sarakkeen nimi
+        sarakkeiden_lkm++; // Siirry seuraavaan sarakkeeseen
+        token = strtok(NULL, ","); // Hae seuraava token
+    }
 
-fclose(tiedosto); // Sulje tiedosto
-return sarakkeet; // Palauta alustetut sarakkeet
+    fclose(tiedosto); // Sulje tiedosto
+    return sarakkeet; // Palauta alustetut sarakkeet
 }
 
 // Muokattu funktio rivin alustamiseen
@@ -65,7 +52,7 @@ Rivi *alusta_rivi(char *rivi_str, Sarake *sarakkeet) {
     // Erotellaan rivin arvot ja tallennetaan ne uusiin arvoihin
     char *token = strtok(rivi_str, ","); // Erota rivin osat pilkulla
     int sarake_indeksi = 0;
-    while (token != NULL && sarake_indeksi < MAX_SARAKE) {
+    while (token != NULL && sarake_indeksi < MAX_SARAKKEET) {
         // Tallenna arvo rivin rakenteeseen
         uusi_rivi->arvot[sarake_indeksi] = strdup(token);
         sarake_indeksi++; // Siirry seuraavaan sarakkeeseen
@@ -74,8 +61,6 @@ Rivi *alusta_rivi(char *rivi_str, Sarake *sarakkeet) {
 
     return uusi_rivi; // Palauta alustettu rivi
 }
-
-
 
 // Muokattu funktio rivien alustamiseen
 Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
@@ -109,8 +94,6 @@ Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
     fclose(tiedosto);
     return rivit;
 }
-
-
 
 void tulosta_taulukon_tiedot(Sarake *sarakkeet, int valinta) {
     for (int i = 0; i < valinta; i++) {
