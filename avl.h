@@ -27,6 +27,5 @@ void printPreOrder(struct Node *root);
 struct Node *minValueNode(struct Node *node);
 struct Node *deleteNode(struct Node *root, char nimi[MAX_RIVI_PITUUS]);
 void freeAVL(struct Node *node);
-void printNode(struct Node *node);
-
+void printNode(struct Node *node, Sarake *sarakkeet);
 #endif

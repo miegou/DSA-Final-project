@@ -4,65 +4,63 @@
 #include "avl.h"
 #include "csv_reader.h"
 
+#define TIEDOSTONIMI "alkon-hinnasto-tekstitiedostona.csv"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Käyttö: %s <tiedostonimi.csv>\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    const char *tiedostonimi = argv[1];
+int main() {
+    const char *tiedostonimi = TIEDOSTONIMI;
     Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
     Rivi **rivit = alusta_rivit(tiedostonimi, sarakkeet);
     struct Node *root = NULL;
 
-    int sarakkeiden_lkm = 0;
-    while (sarakkeet[sarakkeiden_lkm].nimi[0] != '\0') {
-        sarakkeiden_lkm++;
+    int sarakkeiden_lkm = MAX_SARAKKEET;
+
+    printf("Sarakkeiden lukumäärä: %d\n", sarakkeiden_lkm);
+
+    printf("Sarakkeiden nimet:\n");
+    for (int i = 0; i < sarakkeiden_lkm; i++) {
+        printf("%d. %s\n", i + 1, sarakkeet[i].nimi);
     }
 
     int rivien_lkm = laske_rivien_lkm(tiedostonimi);
 
-    int valinta;
+    int rivien_maara = 0;
     printf("Montako riviä haluat lukea tiedostosta? (enintään %d)\n", rivien_lkm);
-    scanf("%d", &valinta);
-    if (valinta > rivien_lkm || valinta < 1) {
+    scanf("%d", &rivien_maara);
+    if (rivien_maara > rivien_lkm || rivien_maara < 1) {
         fprintf(stderr, "Virheellinen syöte.\n");
         exit(EXIT_FAILURE);
     }
 
-    // Tulosta sarakkeiden nimet käyttäjälle
     printf("Valitse vertailuarvo sarakkeen perusteella:\n");
     for (int i = 0; i < sarakkeiden_lkm; i++) {
         printf("%d. %s\n", i + 1, sarakkeet[i].nimi);
     }
 
-    // Pyydä käyttäjää valitsemaan sarakkeen numero
+    int sarakkeen_numero = 0;
     printf("Anna sarakkeen numero, jolla haluat vertailla puuta: ");
-    scanf("%d", &valinta);
+    scanf("%d", &sarakkeen_numero);
 
-    // Tarkista, että käyttäjän antama valinta on kelvollinen
-    if (valinta < 1 || valinta > sarakkeiden_lkm) {
+    if (sarakkeen_numero < 1 || sarakkeen_numero > sarakkeiden_lkm) {
         fprintf(stderr, "Virheellinen syöte.\n");
         exit(EXIT_FAILURE);
     }
 
-    // Valitse vertailuarvo valitun sarakkeen perusteella
     char vertailuarvo[MAX_RIVI_PITUUS];
-    strcpy(vertailuarvo, sarakkeet[valinta - 1].nimi);
+    strcpy(vertailuarvo, sarakkeet[sarakkeen_numero - 1].nimi);
+    printf("Valittu sarakkeen nimi: %s\n", vertailuarvo);
 
-    // Lisää solmut puuhun valitun vertailuarvon perusteella
-    for (int i = 0; i < valinta; i++) {
+    for (int i = 0; i < rivien_maara; i++) {
+        printf("Iteraatio %d\n", i + 1);
         root = insertNode(root, rivit[i], sarakkeet, sarakkeiden_lkm, vertailuarvo);
+        if (root == NULL) {
+            printf("Juurisolmun päivitys epäonnistui iteraatiossa %d\n", i + 1);
+        } else {
+            printf("Juurisolmun päivitys onnistui iteraatiossa %d\n", i + 1);
+        }
     }
+    printNode(root, sarakkeet);
 
-    // Print the content of the first node in the AVL tree
-    printf("Yhden solmun sisältö:\n");
-    printNode(root);
-
-    // Free memory of AVL tree
     freeAVL(root);
 
     return 0;
 }
-

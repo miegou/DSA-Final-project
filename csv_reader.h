@@ -1,9 +1,9 @@
 #ifndef CSV_READER_H
 #define CSV_READER_H
 
-#define MAX_RIVI_PITUUS 12000
-#define MAX_SARAKKEET 31
-#define MAX_RIVI 200
+#define MAX_RIVI_PITUUS 500
+#define MAX_SARAKKEET 30
+
 
 // Define structure for a column
 typedef struct {

@@ -3,7 +3,6 @@
 #include <string.h>
 #include "csv_reader.h"
 
-// Funktio sarakkeiden alustamiseen
 Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     FILE *tiedosto = fopen(tiedostonimi, "r");
     if (tiedosto == NULL) {
@@ -18,7 +17,7 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
         exit(EXIT_FAILURE);
     }
 
-    int sarakkeiden_lkm = 0;
+    int sarakkeen_indeksi = 0;
 
     // Siirrytään neljännelle riville
     for (int i = 0; i < 3; i++) {
@@ -31,9 +30,8 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     fgets(rivi, sizeof(rivi), tiedosto); // Luetaan rivi tiedostosta
     char *token = strtok(rivi, ","); // Erota rivin osat pilkulla
     while (token != NULL) {
-        printf("Sarake nimi: %s\n", token); // Tulostetaan sarakkeen nimi ennen tallentamista
-        strcpy(sarakkeet[sarakkeiden_lkm].nimi, token); // Tallenna sarakkeen nimi
-        sarakkeiden_lkm++; // Siirry seuraavaan sarakkeeseen
+        strcpy(sarakkeet[sarakkeen_indeksi].nimi, token); // Tallenna sarakkeen nimi
+        sarakkeen_indeksi++; // Siirry seuraavaan sarakkeeseen
         token = strtok(NULL, ","); // Hae seuraava token
     }
 
@@ -41,28 +39,48 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     return sarakkeet; // Palauta alustetut sarakkeet
 }
 
-// Muokattu funktio rivin alustamiseen
+
+#include <stdbool.h>
+
+// Function to initialize a row
 Rivi *alusta_rivi(char *rivi_str, Sarake *sarakkeet) {
-    Rivi *uusi_rivi = malloc(sizeof(Rivi)); // Alusta uusi rivirakenne
+    Rivi *uusi_rivi = malloc(sizeof(Rivi)); // Allocate memory for the new row
     if (uusi_rivi == NULL) {
-        perror("Muistin varaaminen epäonnistui"); // Tulosta virheilmoitus
-        exit(EXIT_FAILURE); // Lopeta ohjelma virheellä
+        perror("Memory allocation failed"); // Print error message
+        exit(EXIT_FAILURE); // Exit the program with failure status
     }
 
-    // Erotellaan rivin arvot ja tallennetaan ne uusiin arvoihin
-    char *token = strtok(rivi_str, ","); // Erota rivin osat pilkulla
+    // Initialize values to default (e.g., empty string or "not available")
+    for (int i = 0; i < MAX_SARAKKEET; ++i) {
+        uusi_rivi->arvot[i] = strdup(""); // Default value is empty string
+    }
+
+    // Tokenize the input string to get values for each column
+    char *token = strtok(rivi_str, ",");
     int sarake_indeksi = 0;
     while (token != NULL && sarake_indeksi < MAX_SARAKKEET) {
-        // Tallenna arvo rivin rakenteeseen
-        uusi_rivi->arvot[sarake_indeksi] = strdup(token);
-        sarake_indeksi++; // Siirry seuraavaan sarakkeeseen
-        token = strtok(NULL, ","); // Hae seuraava token
+        // Store the value in the row structure
+        if (strcmp(token, "") != 0) { // If the token is not empty
+            // Check if the token contains multiple values inside quotes
+            char *quote_start = strchr(token, '"');
+            char *quote_end = strrchr(token, '"');
+            if (quote_start != NULL && quote_end != NULL && quote_start != quote_end) {
+                // Token contains multiple values inside quotes
+                // Copy the token value as is
+                uusi_rivi->arvot[sarake_indeksi] = strdup(token);
+            } else {
+                // Token does not contain multiple values inside quotes
+                uusi_rivi->arvot[sarake_indeksi] = strdup(token);
+            }
+        }
+        sarake_indeksi++; // Move to the next column
+        token = strtok(NULL, ","); // Get the next token
     }
 
-    return uusi_rivi; // Palauta alustettu rivi
+    return uusi_rivi; // Return the initialized row
 }
 
-// Muokattu funktio rivien alustamiseen
+
 Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
     FILE *tiedosto = fopen(tiedostonimi, "r");
     if (tiedosto == NULL) {
@@ -70,7 +88,8 @@ Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
         return NULL;
     }
 
-    Rivi **rivit = malloc(MAX_RIVI_PITUUS * sizeof(Rivi *));
+    int rivien_lkm = laske_rivien_lkm(tiedostonimi); // Laske tiedostossa olevien rivien määrä
+    Rivi **rivit = malloc(rivien_lkm * sizeof(Rivi *)); // Varaa tilaa rivien lukumäärälle
     if (rivit == NULL) {
         perror("Muistin varaaminen epäonnistui");
         fclose(tiedosto);
@@ -78,7 +97,6 @@ Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
     }
 
     char rivi[MAX_RIVI_PITUUS];
-    int rivien_lkm = 0;
 
     // Ohitetaan neljä ensimmäistä riviä, joissa on sarakkeiden nimet
     for (int i = 0; i < 4; i++) {
@@ -86,14 +104,16 @@ Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet) {
     }
 
     // Lue tiedostosta niin monta riviä kuin mahdollista
+    int rivien_maara = 0;
     while (fgets(rivi, MAX_RIVI_PITUUS, tiedosto)) {
-        rivit[rivien_lkm] = alusta_rivi(rivi, sarakkeet);
-        rivien_lkm++;
+        rivit[rivien_maara] = alusta_rivi(rivi, sarakkeet);
+        rivien_maara++;
     }
 
     fclose(tiedosto);
     return rivit;
 }
+
 
 void tulosta_taulukon_tiedot(Sarake *sarakkeet, int valinta) {
     for (int i = 0; i < valinta; i++) {
