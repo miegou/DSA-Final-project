@@ -4,16 +4,17 @@
 #include "avl.h"
 #include "csv_reader.h"
 
-// Function to create a new AVL tree node
 struct Node *newNode(Rivi *rivi, Sarake *sarakkeet, int sarakkeiden_lkm) {
     struct Node *node = (struct Node *)malloc(sizeof(struct Node));
     if (node == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    node->rivi = rivi;
-    node->sarakkeet = sarakkeet;
-    node->sarakkeiden_lkm = sarakkeiden_lkm;
+
+    // Initialize the node's data
+    for (int i = 0; i < sarakkeiden_lkm; ++i) {
+        strcpy(node->arvot[i], rivi->arvot[i]);
+    }
     node->left = NULL;
     node->right = NULL;
     node->height = 1;
@@ -48,19 +49,19 @@ struct Node *leftRotate(struct Node *x) {
     return y;
 }
 
-// Function to calculate height of a node
+// Laskee solmun korkeuden
 int height(struct Node *N) {
     if (N == NULL)
         return 0;
     return N->height;
 }
 
-// Max function
+// Palauttaa suuremman arvon kahdesta annetusta
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
-// Function to get balance factor of a node
+// Laskee tasapainon solmun kohdalla
 int getBalance(struct Node *N) {
     if (N == NULL)
         return 0;
@@ -68,18 +69,12 @@ int getBalance(struct Node *N) {
 }
 
 
-// Function to insert a node into AVL tree based on a specified column value
 struct Node *insertNode(struct Node *node, Rivi *rivi, Sarake *sarakkeet, int sarakkeiden_lkm, char *vertailuarvo) {
     // Find the correct position to insert the node and insert it
     if (node == NULL)
         return (newNode(rivi, sarakkeet, sarakkeiden_lkm));
 
-    if (rivi == NULL || node->rivi == NULL) {
-        fprintf(stderr, "Error: Rivit eivät ole kelvollisia vertailua varten.\n");
-        return NULL; // Tai muu sopiva toiminto
-    }
-
-    // Etsi sarakkeen indeksi vertailuarvon perusteella
+    // Find the index of the column based on the comparison value
     int sarakkeen_indeksi = -1;
     for (int i = 0; i < sarakkeiden_lkm; ++i) {
         if (strcmp(sarakkeet[i].nimi, vertailuarvo) == 0) {
@@ -89,11 +84,11 @@ struct Node *insertNode(struct Node *node, Rivi *rivi, Sarake *sarakkeet, int sa
     }
 
     if (sarakkeen_indeksi == -1) {
-        fprintf(stderr, "Error: Saraketta ei löytynyt.\n");
+        fprintf(stderr, "Error: Column not found.\n");
         return NULL;
     }
 
-    int compare = strcmp(rivi->arvot[sarakkeen_indeksi], node->rivi->arvot[sarakkeen_indeksi]);
+    int compare = strcmp(rivi->arvot[sarakkeen_indeksi], node->arvot[sarakkeen_indeksi]);
     if (compare < 0)
         node->left = insertNode(node->left, rivi, sarakkeet, sarakkeiden_lkm, vertailuarvo);
     else if (compare > 0)
@@ -101,24 +96,24 @@ struct Node *insertNode(struct Node *node, Rivi *rivi, Sarake *sarakkeet, int sa
     else
         return node;
 
-    // Update the balance factor of each node and
-    // Balance the tree
+
+
     node->height = 1 + max(height(node->left),
-                   height(node->right));
+                height(node->right));
 
     int balance = getBalance(node);
-    if (balance > 1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->left->rivi->arvot[sarakkeen_indeksi]) < 0)
+    if (balance > 1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->left->arvot[sarakkeen_indeksi]) < 0)
         return rightRotate(node);
 
-    if (balance < -1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->right->rivi->arvot[sarakkeen_indeksi]) > 0)
+    if (balance < -1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->right->arvot[sarakkeen_indeksi]) > 0)
         return leftRotate(node);
 
-    if (balance > 1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->left->rivi->arvot[sarakkeen_indeksi]) > 0) {
+    if (balance > 1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->left->arvot[sarakkeen_indeksi]) > 0) {
         node->left = leftRotate(node->left);
         return rightRotate(node);
     }
 
-    if (balance < -1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->right->rivi->arvot[sarakkeen_indeksi]) < 0) {
+    if (balance < -1 && strcmp(rivi->arvot[sarakkeen_indeksi], node->right->arvot[sarakkeen_indeksi]) < 0) {
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
@@ -145,8 +140,8 @@ void printPreOrder(struct Node *root) {
     if (root != NULL) {
         printf("Node Content:\n");
         printf("Sarakkeet:\n");
-        for (int i = 0; i < root->sarakkeiden_lkm; i++) {
-            printf("%s: %s\n", root->sarakkeet[i].nimi, root->rivi->arvot[i]);
+        for (int i = 0; i < MAX_SARAKKEET; i++) {
+            printf("%s: %s\n", root->arvot[i], root->arvot[i]);
         }
         printPreOrder(root->left);
         printPreOrder(root->right);
@@ -159,12 +154,13 @@ void printInOrder(struct Node *root) {
         printInOrder(root->left);
         printf("Node Content:\n");
         printf("Sarakkeet:\n");
-        for (int i = 0; i < root->sarakkeiden_lkm; i++) {
-            printf("%s: %s\n", root->sarakkeet[i].nimi, root->rivi->arvot[i]);
+        for (int i = 0; i < MAX_SARAKKEET; i++) {
+            printf("%s: %s\n", root->arvot[i], root->arvot[i]);
         }
         printInOrder(root->right);
     }
 }
+
 
 
 void freeAVL(struct Node *node) {
@@ -178,20 +174,47 @@ void freeAVL(struct Node *node) {
     free(node);
 }
 
-// Function to print the contents of a single AVL tree node
+// Funktio yhden AVL-puun solmun sisällön tulostamiseksi
 void printNode(struct Node *node, Sarake *sarakkeet) {
     if (node != NULL) {
-        printf("Node Content:\n");
-        printf("Sarakkeet:\n");
+        printf("Solmun sisältö:\n");
+
+        // Tulostetaan jokaisen sarakkeen nimi ja arvo omalle riville
         for (int i = 0; i < MAX_SARAKKEET; ++i) {
-            if (node->rivi != NULL && node->rivi->arvot[i] != NULL) {
-                printf("%s: %s\n", sarakkeet[i].nimi, node->rivi->arvot[i]);
-            }
+            printf("%s: %s\n", sarakkeet[i].nimi, node->arvot[i]);
         }
-        printf("Left Child: %p\n", (void *)node->left);
-        printf("Right Child: %p\n", (void *)node->right);
-        printf("Height: %d\n", node->height);
+
+        // Tulostetaan vasen ja oikea lapsisolmu sekä korkeus
+        printf("Vasen lapsi: %p\n", (void *)node->left);
+        printf("Oikea lapsi: %p\n", (void *)node->right);
+        printf("Korkeus: %d\n", node->height);
     } else {
-        printf("Node is NULL\n");
+        printf("Solmu on tyhjä\n");
     }
 }
+
+void printNodesWithColumnValue(struct Node* node, int column, char* targetValue) {
+    if (node == NULL) {
+        return;
+    }
+
+    // Tarkista, onko haetun sarakkeen arvo haluttu
+    if (strcmp(node->arvot[column], targetValue) == 0) {
+        printf("Sarakkeen %d arvo on %s:\n", column, targetValue);
+        printNode(node, ); // Tulosta solmun sisältö
+    } else {
+        printf("Sarakkeen %d arvo ei ole %s, arvo oli: %s\n", column, targetValue, node->arvot[column]);
+    }
+
+    // Käy rekursiivisesti läpi puun vasen ja oikea lapsi
+    printNodesWithColumnValue(node->left, sarakkeet, column, targetValue);
+    printNodesWithColumnValue(node->right, sarakkeet, column, targetValue);
+}
+
+
+
+
+
+
+
+

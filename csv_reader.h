@@ -1,23 +1,23 @@
 #ifndef CSV_READER_H
 #define CSV_READER_H
 
-#define MAX_RIVI_PITUUS 500
 #define MAX_SARAKKEET 30
+#define MAX_SARAKKEEN_NIMEN_PITUUS 50
+#define MAX_ARVO_PITUUS 300
+#define MAX_RIVI_PITUUS (MAX_SARAKKEET * MAX_ARVO_PITUUS)
 
-
-// Define structure for a column
+// Sarake-rakenne
 typedef struct {
-    char nimi[MAX_RIVI_PITUUS];
+    char nimi[MAX_SARAKKEEN_NIMEN_PITUUS];
 } Sarake;
 
-// Define structure for a row
+// Rivi-rakenne
 typedef struct {
-    char *arvot[MAX_SARAKKEET];
+    char arvot[MAX_SARAKKEET][MAX_ARVO_PITUUS]; // Arvot kullekin sarakkeelle
 } Rivi;
 
 Sarake *alusta_sarakkeet(const char *tiedostonimi);
 Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet);
-void tulosta_taulukon_tiedot(Sarake *sarakkeet, int valinta);
-int laske_rivien_lkm(const char *tiedostonimi); 
+int laske_rivien_lkm(const char *tiedostonimi);
 
 #endif /* CSV_READER_H */
