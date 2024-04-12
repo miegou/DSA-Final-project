@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 import pandas as pd
 
 def select_file():
@@ -15,41 +16,39 @@ def select_file():
         print("Tiedosto on tyhjä.")
         return
 
-    # Tulosta tiedoston ensimmäiset 5 riviä komentoriville
-    print("Tiedoston ensimmäiset 5 riviä:")
-    print(df.head())
+    # Poista "Valitse .csv-tiedosto" -nappi ja logo
+    select_button.pack_forget()
+    logo_label.pack_forget()
 
-    # Luo uusi ikkuna tkinterillä ja näytä tiedoston ensimmäiset 5 riviä siinä
-    new_window = tk.Toplevel()
-    new_window.title("CSV Reader - Ensimmäiset 5 riviä")
+    # Näytä ensimmäiset 5 riviä .csv-tiedostosta
+    data_frame = ttk.Treeview(root)
+    data_frame["columns"] = list(df.columns)
+    data_frame["show"] = "headings"
 
-    text_area = tk.Text(new_window, height=10, width=80)
-    text_area.pack()
+    for col in data_frame["columns"]:
+        data_frame.heading(col, text=col)
 
-    # Lisätään ensimmäiset 5 riviä Text-alueelle
     for index, row in df.head().iterrows():
-        text_area.insert(tk.END, str(row) + "\n")
+        data_frame.insert("", "end", values=list(row))
+
+    data_frame.pack(pady=20)
 
 def main():
+    global root, logo_label, select_button
     root = tk.Tk()
     root.title("CSV Reader")
 
+    # Luo Frame, johon sijoitetaan logo ja "Valitse .csv-tiedosto" -nappi
+    top_frame = tk.Frame(root)
+    top_frame.pack()
+
     # Logo etusivulle
-    logo = tk.PhotoImage(file="logo.png")
-    logo_label = tk.Label(root, image=logo)
-    logo_label.pack()
+    logo = tk.PhotoImage(file="logomato.png")
+    logo_label = tk.Label(top_frame, image=logo)
+    logo_label.pack(side=tk.LEFT, padx=20, pady=10)
 
-    select_button = tk.Button(root, text="Valitse .csv-tiedosto", command=select_file)
-    select_button.pack(pady=20)
-
-    def change_logo():
-        # Vaihda logo pienemmäksi ja siirrä kulmaan
-        small_logo = logo.subsample(4)
-        logo_label.config(image=small_logo)
-        logo_label.pack(side=tk.RIGHT, padx=20, pady=10)
-
-    # Lisätään tapahtumankäsittelijä, joka muuttaa logon koon ja sijainnin
-    select_button.config(command=lambda: [select_file(), change_logo()])
+    select_button = tk.Button(top_frame, text="Valitse .csv-tiedosto", command=select_file)
+    select_button.pack(side=tk.LEFT, padx=20, pady=10)
 
     root.mainloop()
 
