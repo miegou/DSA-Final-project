@@ -1,0 +1,57 @@
+import tkinter as tk
+from tkinter import filedialog
+import pandas as pd
+
+def select_file():
+    file_path = filedialog.askopenfilename(title="Valitse .csv-tiedosto", filetypes=[("CSV files", "*.csv")])
+    if not file_path:
+        return
+
+    # Lue .csv-tiedosto käyttäen Pandas-kirjastoa
+    df = pd.read_csv(file_path)
+
+    # Tarkistetaan, että DataFrame sisältää dataa
+    if df.empty:
+        print("Tiedosto on tyhjä.")
+        return
+
+    # Tulosta tiedoston ensimmäiset 5 riviä komentoriville
+    print("Tiedoston ensimmäiset 5 riviä:")
+    print(df.head())
+
+    # Luo uusi ikkuna tkinterillä ja näytä tiedoston ensimmäiset 5 riviä siinä
+    new_window = tk.Toplevel()
+    new_window.title("CSV Reader - Ensimmäiset 5 riviä")
+
+    text_area = tk.Text(new_window, height=10, width=80)
+    text_area.pack()
+
+    # Lisätään ensimmäiset 5 riviä Text-alueelle
+    for index, row in df.head().iterrows():
+        text_area.insert(tk.END, str(row) + "\n")
+
+def main():
+    root = tk.Tk()
+    root.title("CSV Reader")
+
+    # Logo etusivulle
+    logo = tk.PhotoImage(file="logo.png")
+    logo_label = tk.Label(root, image=logo)
+    logo_label.pack()
+
+    select_button = tk.Button(root, text="Valitse .csv-tiedosto", command=select_file)
+    select_button.pack(pady=20)
+
+    def change_logo():
+        # Vaihda logo pienemmäksi ja siirrä kulmaan
+        small_logo = logo.subsample(4)
+        logo_label.config(image=small_logo)
+        logo_label.pack(side=tk.RIGHT, padx=20, pady=10)
+
+    # Lisätään tapahtumankäsittelijä, joka muuttaa logon koon ja sijainnin
+    select_button.config(command=lambda: [select_file(), change_logo()])
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
