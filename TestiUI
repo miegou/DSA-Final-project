@@ -1,0 +1,90 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
+import pandas as pd
+
+def select_file():
+    file_path = filedialog.askopenfilename(title="Valitse .csv-tiedosto", filetypes=[("CSV files", "*.csv")])
+    if not file_path:
+        return
+
+    # Lue .csv-tiedosto käyttäen Pandas-kirjastoa
+    df = pd.read_csv(file_path)
+
+    # Tarkistetaan, että DataFrame sisältää dataa
+    if df.empty:
+        print("Tiedosto on tyhjä.")
+        return
+
+    # Poista vanha taulukko
+    clear_data_frame()
+
+    # Poista "Valitse .csv-tiedosto" -nappi ja logo
+    select_button.pack(side=tk.RIGHT, padx=20, pady=10)
+    logo_label.pack(side=tk.LEFT, padx=20, pady=10)
+
+    # Lisää dropdown-valikko
+    global juoma_valinta
+    #juoma_valinta_label = tk.Label(root, text="Valitse juoma:")
+    #juoma_valinta_label.pack(pady=5)
+    juoma_valinta = ttk.Combobox(root, values=["Juomatyyppi","Vesi", "Mehu", "Limsa"])
+    juoma_valinta.pack(pady=10)
+    juoma_valinta = "Juomatyyppi"
+
+    # Lisää Etsi-nappi
+    etsi_button = tk.Button(root, text="Etsi", command=etsi_juoma)
+    etsi_button.pack(pady=10)
+
+
+    # Näytä ensimmäiset 5 riviä .csv-tiedostosta
+    global data_frame
+    data_frame = ttk.Treeview(root)
+    data_frame["columns"] = list(df.columns)
+    data_frame["show"] = "headings"
+
+    for col in data_frame["columns"]:
+        data_frame.heading(col, text=col)
+
+    for index, row in df.head().iterrows():
+        data_frame.insert("", "end", values=list(row))
+
+    data_frame.pack(pady=20)
+
+def clear_data_frame():
+    global data_frame
+    if data_frame:
+        data_frame.pack_forget()
+        data_frame.destroy()
+
+def etsi_juoma():
+    selected_juoma = juoma_valinta.get()
+    # Tässä voit toteuttaa etsinnän valitun juoman perusteella
+    print("Etsitään juomaa:", selected_juoma)
+
+def main():
+    global root, logo_label, select_button, data_frame, juoma_valinta
+    root = tk.Tk()
+    root.title("CSV Reader")
+
+    # Luo Frame, johon sijoitetaan logo ja "Valitse .csv-tiedosto" -nappi
+    top_frame = tk.Frame(root)
+    top_frame.pack()
+
+    # Logo etusivulle
+    logo = tk.PhotoImage(file="logomato.png")
+    logo_label = tk.Label(top_frame, image=logo)
+    logo_label.pack(side=tk.TOP, padx=20, pady=10)
+
+    select_button = tk.Button(top_frame, text="Valitse .csv-tiedosto", command=select_file)
+    select_button.pack(side=tk.TOP, padx=20, pady=10)
+
+    data_frame = None  # Alustetaan taulukko
+    juoma_valinta = None  # Alustetaan juoman valinta
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
+
+    #select_button.pack(side=tk.RIGHT, padx=20, pady=10)
+    #logo_label.pack(side=tk.LEFT, padx=20, pady=10)
