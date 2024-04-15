@@ -1,0 +1,8 @@
+Joten kun sanon "etsi solmu", tarkoitan, että etsitään hajautustaulukosta tiettyä elementtiä, joka vastaa hakuehtoja (esimerkiksi sarakkeen nimi). Kun kyseinen solmu on löydetty, voimme käyttää sen sisältämiä tietoja, kuten linkitettyä listaa, joka sisältää kaikki ne rivit, joiden arvot vastaavat hakuehtoja. Tämän jälkeen voimme käydä läpi kyseisen listan ja suorittaa tarvittavat toiminnot niille riveille, jotka täyttävät hakuehdot.
+User
+eli kaikilla sarakkeilla pitäisi olla oma node joka sisältää linkitetyn listan kaikista niistä riveistä joilla on kyseinen tieto?
+ChatGPT
+
+Kyllä, juuri niin. Yleensä jokaisella hajautustaulukon solmulla olisi linkitetty lista, joka sisältää kaikki ne rivit, joiden arvot vastaavat kyseistä saraketta. Tämä lähestymistapa mahdollistaa tehokkaan tiedonhaun, koska voit nopeasti löytää kaikki ne rivit, jotka vastaavat tietylle hakuehdolle (esimerkiksi tietyn sarakkeen arvo).
+
+Kun haluat hakea tiettyä arvoa tietyltä sarakkeelta, voit ensin etsiä hajautustaulukosta solmun, joka vastaa kyseistä saraketta. Sen jälkeen voit käyttää kyseisen solmun linkitettyä listaa löytääksesi kaikki ne rivit, joiden arvot vastaavat hakuehtoja. Tämä mahdollistaa tehokkaan tiedonhaun, erityisesti suurilla tietomäärillä.

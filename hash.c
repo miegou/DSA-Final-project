@@ -137,10 +137,10 @@ void etsi_tuotteet_sarakkeen_perusteella(HashTable *ht, char *sarakkeen_nimi, ch
         // Tarkistetaan, että solmun rivitietoja on saatavilla
         if (current->rivit != NULL && current->rivit->rivi != NULL) {
             // Tulostetaan vertailtavat arvot
-            printf("Vertaillaan saraketta %s: vertailuarvo %s, etsittävä arvo %s\n", sarakkeen_nimi, current->rivit->rivi->arvot[1], etsittava_arvo);
+            printf("Vertaillaan saraketta %s: vertailuarvo %s, etsittävä arvo %s\n", sarakkeen_nimi, current->rivit->rivi->arvot, etsittava_arvo);
 
             // Tarkistetaan, vastaako solmun sarakkeen arvo etsittävää arvoa
-            if (strcmp(current->nimi, sarakkeen_nimi) == 0 && strcmp(current->rivit->rivi->arvot[1], etsittava_arvo) == 0) {
+            if (strcmp(current->nimi, sarakkeen_nimi) == 0 && strcmp(current->rivit->rivi->arvot[2], etsittava_arvo) == 0) {
                 // Tulostetaan solmun kaikki tiedot
                 printf("Tuote löytyi:\n");
                 printf("Nimi: %s\n", current->nimi);

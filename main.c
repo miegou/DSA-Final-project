@@ -5,39 +5,48 @@
 #include "csv_reader.h"
 #include "hash.h"
 
-#define TIEDOSTONIMI "alkon-hinnasto-tekstitiedostona.csv"
+#define TIEDOSTONIMI "alkon-hinnasto-tekstitiedostona-muokattu.csv"
+#define MAX_RIVIT 12000
 
 int main() {
+int rivien_maara = 100;
     const char *tiedostonimi = TIEDOSTONIMI;
-    Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
-    Rivi **rivit = alusta_rivit(tiedostonimi, sarakkeet);
-    struct Node *root = NULL;
-    int rivien_lkm = laske_rivien_lkm(tiedostonimi);
-
-    // printf("Sarakkeiden nimet:\n");
-    // for (int i = 0; i < MAX_SARAKKEET; i++) {
-    //     printf("%d. %s\n", i + 1, sarakkeet[i].nimi);
-    // }
-
-    // Luo hajautustaulu sarakkeilla
-    HashTable *ht = luo_hajautustaulu();
-
-    lisaa_sarakkeet_hajautustauluun(ht, sarakkeet);
-    laske_rivien_lkm(tiedostonimi);
-    printf("Rivien lkm: %d\n", rivien_lkm);
-
-    for (int i = 0; i < 6; i++) {
-        lisaa_rivi(ht, sarakkeet, rivit[i]->arvot);
+    Rivi **rivit = NULL;
+    char ***taulukko = malloc(MAX_RIVIT * sizeof(char **));
+    for (int i = 0; i < MAX_RIVIT; i++) {
+        taulukko[i] = malloc(MAX_SARAKKEET * sizeof(char *));
+        for (int j = 0; j < MAX_SARAKKEET; j++) {
+            taulukko[i][j] = malloc(MAX_ARVO_PITUUS * sizeof(char));
+        }
     }
-    printf("Rivit lisätty hajautustauluun\n");
 
-    char *etsittava_sarakkeen_nimi = "Hinta";
-    char *etsittava_arvo = "10.48"; // Voit muuttaa tähän haluamasi hinnan
-    etsi_tuotteet_sarakkeen_perusteella(ht, etsittava_sarakkeen_nimi, etsittava_arvo);
-    printf("Palattiin mainiin etsi_tuotteet_sarakkeen_perusteella-funktiosta\n");
+    Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
+    rivit = alusta_rivit(tiedostonimi, sarakkeet, &rivien_maara);
+    printf("Rivejä: %d\n", rivien_maara);
 
-    //vapauta_hajautustaulu(ht);
-    free(sarakkeet);
+    int erilaisten_maara = laske_erilaiset_arvot(rivit, rivien_maara, taulukko);
+    printf("Eri arvoja sarakkeessa 12: %d\n", erilaisten_maara);
+
+    // // Tulostaa 10 ensimmäistä riviä indeksistä 12
+    // for (int j = 0; j < rivien_maara && j < 100; j++) {
+    //     printf("%s\n", rivit[j]->arvot[12]);
+    // }
+    // printf("\n");
+
+    // Vapauta muisti
+    for (int i = 0; i < MAX_RIVIT; i++) {
+        for (int j = 0; j < MAX_SARAKKEET; j++) {
+            free(taulukko[i][j]);
+        }
+        free(taulukko[i]);
+    }
+    free(taulukko);
+
+    // Vapauta rivit
+    for (int i = 0; i < rivien_maara; i++) {
+        free(rivit[i]);
+    }
+    free(rivit);
 
     return 0;
 }
