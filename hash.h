@@ -2,31 +2,30 @@
 #define HASH_H
 #include "csv_reader.h"
 
+#define HASH_TAULUN_KOKO 120
+
+extern int hajautettavan_arvon_indeksi;
+
+//Määrittele RiviNode-rakenne
 typedef struct RiviNode {
-    Rivi *rivi;
-    struct RiviNode *seuraava;
+    Rivi *rivi; // Rivi-olio solmussa
+    char *nimi; // Solmun nimi
+    struct RiviNode *next; // Seuraavan solmun osoitin
 } RiviNode;
 
-typedef struct HashNode {
-    char nimi[MAX_SARAKKEEN_NIMEN_PITUUS];
-    RiviNode *rivit; // Linkitetty lista riveistä
-    struct HashNode *seuraava;  // Lisätään linkitetyn listan solmu
-} HashNode;
-
-
+// Määrittele hajautustaulun rakenne
 typedef struct HashTable {
-    int koko;
-    HashNode *solmut[MAX_SARAKKEET];
+    RiviNode *hash_arvot[HASH_TAULUN_KOKO]; // Taulukko linkitettyjen listojen pääsolmuille
 } HashTable;
 
-void lisaa_sarakkeet_hajautustauluun(HashTable *ht, Sarake *sarakkeet);
-void lisaa_rivi(HashTable *ht, Sarake *sarakkeet, char (*rivin_arvot)[MAX_ARVO_PITUUS]);
+//void lisaa_sarakkeet_hajautustauluun(HashTable *ht, Sarake *sarakkeet);
+void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int sarakkeen_indeksi);
 HashTable * luo_hajautustaulu();
-void lisaa_sarake_arvo(HashTable *ht, char *sarakkeen_nimi, char *arvo);
+//void vapauta_hajautustaulu(HashTable *ht);
+//void vapauta_sarakkeen_rivit(RiviNode *rivit);
+//void tulosta_hajautustaulu(HashTable *ht);
+unsigned int laske_hash(char *s);
 void vapauta_hajautustaulu(HashTable *ht);
-void vapauta_sarakkeen_rivit(RiviNode *rivit);
-int hajautusfunktio(const char *avain);
-void tulosta_hajautustaulu(HashTable *ht);
-void etsi_tuotteet_sarakkeen_perusteella(HashTable *ht, char *sarakkeen_nimi, char *etsittava_arvo);
+void hae_arvoa_hajautustaulusta(RiviNode *node);
 
 #endif

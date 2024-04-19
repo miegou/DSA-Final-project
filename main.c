@@ -1,52 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "avl.h"
 #include "csv_reader.h"
 #include "hash.h"
 
 #define TIEDOSTONIMI "alkon-hinnasto-tekstitiedostona-muokattu.csv"
-#define MAX_RIVIT 12000
 
 int main() {
-int rivien_maara = 100;
+    int rivien_maara = 0;
     const char *tiedostonimi = TIEDOSTONIMI;
     Rivi **rivit = NULL;
-    char ***taulukko = malloc(MAX_RIVIT * sizeof(char **));
-    for (int i = 0; i < MAX_RIVIT; i++) {
-        taulukko[i] = malloc(MAX_SARAKKEET * sizeof(char *));
-        for (int j = 0; j < MAX_SARAKKEET; j++) {
-            taulukko[i][j] = malloc(MAX_ARVO_PITUUS * sizeof(char));
-        }
-    }
+    int hajautettavan_arvon_indeksi = 0;
 
+    // Alusta sarakkeet ja rivit
     Sarake *sarakkeet = alusta_sarakkeet(tiedostonimi);
-    rivit = alusta_rivit(tiedostonimi, sarakkeet, &rivien_maara);
+    rivit = alusta_rivit(tiedostonimi, &rivien_maara);
     printf("Rivejä: %d\n", rivien_maara);
 
-    int erilaisten_maara = laske_erilaiset_arvot(rivit, rivien_maara, taulukko);
-    printf("Eri arvoja sarakkeessa 12: %d\n", erilaisten_maara);
-
-    // // Tulostaa 10 ensimmäistä riviä indeksistä 12
-    // for (int j = 0; j < rivien_maara && j < 100; j++) {
-    //     printf("%s\n", rivit[j]->arvot[12]);
-    // }
-    // printf("\n");
-
-    // Vapauta muisti
-    for (int i = 0; i < MAX_RIVIT; i++) {
-        for (int j = 0; j < MAX_SARAKKEET; j++) {
-            free(taulukko[i][j]);
-        }
-        free(taulukko[i]);
+    // Tulosta sarakkeet
+    for (int i = 0; i < MAX_SARAKKEET; i++) {
+        printf("%d. %s\n", i, sarakkeet[i].nimi);
     }
-    free(taulukko);
+    //Kysytään käyttäjältä sarakkeen indeksi
+    printf("Millä kategorialla haluat rajata hakuasi? Valitse sarakkeen indeksi:\n");
+    scanf("%d", &hajautettavan_arvon_indeksi);
 
-    // Vapauta rivit
-    for (int i = 0; i < rivien_maara; i++) {
-        free(rivit[i]);
-    }
-    free(rivit);
+    // Laske erilaisten arvojen määrä
+    //int erilaisten_maara = nayta_erilaiset_arvot(rivit, rivien_maara, hajautettavan_arvon_indeksi);
+
+    // Luo hajautustaulu
+    HashTable *ht = luo_hajautustaulu();
+
+    // Lisää rivit hajautustauluun
+    lisaa_rivit_hajautustauluun(&ht, rivit, rivien_maara, hajautettavan_arvon_indeksi);
+
+    //Tulosta mahdolliset luokat
+    nayta_erilaiset_arvot(rivit, rivien_maara, hajautettavan_arvon_indeksi);
+    printf("Valitse luokka, josta haluat nähdä tuotteet:\n");
+    scanf("%d", &hajautettavan_arvon_indeksi);
+    hae_arvoa_hajautustaulusta(ht->hash_arvot[hajautettavan_arvon_indeksi]);
+
+
+    // Vapauta dynaamisesti varatut muistit
+    vapauta_muisti(rivit, sarakkeet);
+    vapauta_hajautustaulu(ht);
 
     return 0;
 }

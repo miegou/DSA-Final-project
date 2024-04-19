@@ -12,144 +12,135 @@ HashTable *luo_hajautustaulu() {
         exit(EXIT_FAILURE);
     }
 
-    // Alusta hajautustaulun solmut
-    for (int i = 0; i < MAX_SARAKKEET; i++) {
-        ht->solmut[i] = NULL;
+    // Alusta hajautustaulun arvot
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        ht->hash_arvot[i] = 0; // Voit alustaa arvot haluamallasi tavalla
     }
     printf("Hajautustaulu luotu\n");
     return ht;
 }
 
 
-// Yksinkertainen hajautusfunktio
-int hajautusfunktio(const char *avain) {
-    int summa = 0;
-    for (int i = 0; avain[i] != '\0'; i++) {
-        summa += avain[i];
+unsigned int laske_hash(char *s) {
+   unsigned hash = 0;
+
+    for(; *s; ++s)
+    {
+        hash += *s;
+        hash += (hash << 10);
+        hash ^= (hash >> 6);
     }
-    return summa % MAX_SARAKKEET;
+
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+
+    hash = hash % HASH_TAULUN_KOKO;
+
+    return hash;
 }
 
 
-void lisaa_sarakkeet_hajautustauluun(HashTable *ht, Sarake *sarakkeet) {
-    for (int i = 0; i < MAX_SARAKKEET; i++) {
-        ht->solmut[i] = malloc(sizeof(HashNode));
-        if (ht->solmut[i] == NULL) {
-            perror("Muistin varaaminen epäonnistui");
+// Käy läpi rivit ja hajauttaa ne listaan annetun sarakkeen perusteella 
+void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int sarakkeen_indeksi) {
+    for (int rivi_indeksi = 0; rivi_indeksi < rivien_maara; rivi_indeksi++) {
+        char *nimi = rivit[rivi_indeksi]->arvot[sarakkeen_indeksi];
+        int hash = laske_hash(nimi) % HASH_TAULUN_KOKO; // Laske hash-arvo ja moduloi taulukon koon kanssa
+        
+        // Luodaan uusi RiviNode ja lisätään se listaan
+        RiviNode *new_node = malloc(sizeof(RiviNode));
+        if (new_node == NULL) {
+            perror("Muistin varaus epäonnistui");
             exit(EXIT_FAILURE);
         }
-        printf("%d. %s\n", i + 1, sarakkeet[i].nimi);
-        strcpy(ht->solmut[i]->nimi, sarakkeet[i].nimi);
-        ht->solmut[i]->rivit = NULL; // Alustetaan linkitetty lista nulleksi
-    }
-}
+        new_node->rivi = rivit[rivi_indeksi];
+        new_node->next = NULL;
 
+        // Asetetaan uuden solmun nimeksi sarakkeen indeksin arvo
+        new_node->nimi = strdup(nimi);
 
-void lisaa_rivi(HashTable *ht, Sarake *sarakkeet, char (*rivin_arvot)[MAX_ARVO_PITUUS]) {
-    // Käydään läpi kaikki rivin arvot ja lisätään ne hajautustauluun
-    for (int i = 0; i < MAX_SARAKKEET; i++) {
-        char *sarakkeen_nimi = sarakkeet[i].nimi; // Käytetään sarakkeiden nimiä taulukosta
-        char *arvo = rivin_arvot[i]; // Käytetään rivin arvoja taulukosta
-        lisaa_sarake_arvo(ht, sarakkeen_nimi, arvo);
-    }
-}
-
-
-void lisaa_sarake_arvo(HashTable *ht, char *sarakkeen_nimi, char *arvo) {
-    // Etsi hajautustaulusta saraketta vastaava solmu
-    int indeksi = hajautusfunktio(sarakkeen_nimi);
-    HashNode *solmu = ht->solmut[indeksi];
-
-    // Jos solmua ei ole vielä luotu, luo uusi solmu ja liitä se hajautustauluun
-    if (solmu == NULL) {
-        solmu = malloc(sizeof(HashNode));
-        if (solmu == NULL) {
-            perror("Muistin varaaminen epäonnistui");
-            exit(EXIT_FAILURE);
+        // Tarkista, onko hash-arvon kohdalla jo lista
+        if ((*ht)->hash_arvot[hash] == NULL) {
+            // Jos hash-arvon kohdalla ei ole vielä listaa, luodaan uusi lista ja lisätään sinne uusi solmu
+            (*ht)->hash_arvot[hash] = new_node;
+        } else {
+            // Jos hash-arvon kohdalla on jo lista, tarkista ensimmäisen solmun nimi
+            RiviNode *current = (*ht)->hash_arvot[hash];
+            if (strcmp(current->nimi, nimi) == 0) {
+                // Jos ensimmäisen solmun nimi on sama kuin uuden solmun nimi, lisää solmu listaan
+                while (current->next != NULL) {
+                    current = current->next;
+                }
+                current->next = new_node;
+            } else {
+                // Jos ensimmäisen solmun nimi ei ole sama kuin uuden solmun nimi, käytä avointa hajautusta
+                int index = (hash + 1) % HASH_TAULUN_KOKO;
+                while ((*ht)->hash_arvot[index] != NULL && index != hash) {
+                    index = (index + 1) % HASH_TAULUN_KOKO;
+                }
+                // Jos löydettiin vapaa indeksi, lisätään solmu siihen
+                if ((*ht)->hash_arvot[index] == NULL) {
+                    (*ht)->hash_arvot[index] = new_node;
+                } else {
+                    // Jos hajautustaulu on täynnä, kaadu ohjelmaan
+                    fprintf(stderr, "Hajautustaulu on täynnä.\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
         }
-        strcpy(solmu->nimi, sarakkeen_nimi);
-        solmu->rivit = NULL;
-        ht->solmut[indeksi] = solmu;
     }
-
-    // Lisää uusi rivi (tai solmu) sarakkeen linkitettyyn listaan
-    RiviNode *uusi_rivi = malloc(sizeof(RiviNode));
-    if (uusi_rivi == NULL) {
-        perror("Muistin varaaminen epäonnistui");
-        exit(EXIT_FAILURE);
-    }
-    uusi_rivi->rivi = malloc(sizeof(Rivi));
-    if (uusi_rivi->rivi == NULL) {
-        perror("Muistin varaaminen epäonnistui");
-        exit(EXIT_FAILURE);
-    }
-    strcpy(uusi_rivi->rivi->arvot[indeksi], arvo);
-    uusi_rivi->seuraava = solmu->rivit;
-    solmu->rivit = uusi_rivi;
 }
 
 void vapauta_hajautustaulu(HashTable *ht) {
-    for (int i = 0; i < MAX_SARAKKEET; i++) {
-        HashNode *current = ht->solmut[i];
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        RiviNode *current = ht->hash_arvot[i];
         while (current != NULL) {
-            HashNode *next = current->seuraava;
-            vapauta_sarakkeen_rivit(current->rivit); // Vapauta linkitetyn listan muisti
-            free(current); // Vapauta solmun muisti
-            current = next;
+            RiviNode *temp = current;
+            current = current->next;
+            free(temp->nimi); // Vapauta nimi-merkkijono
+            free(temp);       // Vapauta RiviNode-solmu
         }
     }
-    free(ht); // Vapauta hajautustaulun muisti
+    free(ht); // Vapauta itse hajautustaulu
 }
 
-void vapauta_sarakkeen_rivit(RiviNode *rivit) {
-    while (rivit != NULL) {
-        RiviNode *seuraava = rivit->seuraava;
-        free(rivit);  // Vapautetaan rivin solmu
-        rivit = seuraava;
-    }
-}
 
-// Tulostaa hajautustaulun sisällön
-void tulosta_hajautustaulu(HashTable *ht) {
-    for (int i = 0; i < MAX_SARAKKEET; i++) {
-        HashNode *solmu = ht->solmut[i];
-        printf("Sarake %d: %s\n", i + 1, solmu->nimi);
-        RiviNode *rivit = solmu->rivit;
-        while (rivit != NULL) {
-            printf("Arvot: ");
-            for (int j = 0; j < MAX_SARAKKEET; j++) {
-                printf("%s: %s, ", solmu->nimi, rivit->rivi->arvot[j]);
-            }
-            printf("\n");
-            rivit = rivit->seuraava;
+// Hae arvoa hajautustaulusta
+void hae_arvoa_hajautustaulusta(RiviNode *node) {
+    // Käy läpi linkitetty lista ja tulosta jokaisen solmun arvo
+    while (node != NULL) {
+        // Tulosta tämän solmun arvot
+        for (int i = 0; i < MAX_SARAKKEET; i++) {
+            printf("%s\n", node->rivi->arvot[i]);
         }
+        printf("\n");
+
+        // Siirry seuraavaan solmuun
+        node = node->next;
     }
 }
 
+// void vapauta_sarakkeen_rivit(RiviNode *rivit) {
+//     while (rivit != NULL) {
+//         RiviNode *seuraava = rivit->seuraava;
+//         free(rivit);  // Vapautetaan rivin solmu
+//         rivit = seuraava;
+//     }
+// }
 
-// Etsii tuotteet hajautustaulusta sarakkeen avaimen perusteella ja tulostaa niihin liittyvät tiedot
-void etsi_tuotteet_sarakkeen_perusteella(HashTable *ht, char *sarakkeen_nimi, char *etsittava_arvo) {
-    // Käydään läpi hajautustaulun solmut
-    for (int i = 0; i < ht->koko; i++) {
-        HashNode *current = ht->solmut[i];
-        printf("Solmu %d: %s\n", i + 1, current->nimi);
-
-        // Tarkistetaan, että solmun rivitietoja on saatavilla
-        if (current->rivit != NULL && current->rivit->rivi != NULL) {
-            // Tulostetaan vertailtavat arvot
-            printf("Vertaillaan saraketta %s: vertailuarvo %s, etsittävä arvo %s\n", sarakkeen_nimi, current->rivit->rivi->arvot, etsittava_arvo);
-
-            // Tarkistetaan, vastaako solmun sarakkeen arvo etsittävää arvoa
-            if (strcmp(current->nimi, sarakkeen_nimi) == 0 && strcmp(current->rivit->rivi->arvot[2], etsittava_arvo) == 0) {
-                // Tulostetaan solmun kaikki tiedot
-                printf("Tuote löytyi:\n");
-                printf("Nimi: %s\n", current->nimi);
-                // Lisää tässä tarvittaessa muut tiedot
-            }
-        } else {
-            printf("Rivitietoja ei löytynyt\n");
-        }
-    }
-}
-
-
+// // Tulostaa hajautustaulun sisällön
+// void tulosta_hajautustaulu(HashTable *ht) {
+//     for (int i = 0; i < MAX_SARAKKEET; i++) {
+//         HashNode *solmu = ht->solmut[i];
+//         printf("Sarake %d: %s\n", i + 1, solmu->nimi);
+//         RiviNode *rivit = solmu->rivit;
+//         while (rivit != NULL) {
+//             printf("Arvot: ");
+//             for (int j = 0; j < MAX_SARAKKEET; j++) {
+//                 printf("%s: %s, ", solmu->nimi, rivit->rivi->arvot[j]);
+//             }
+//             printf("\n");
+//             rivit = rivit->seuraava;
+//         }
+//     }
+// }

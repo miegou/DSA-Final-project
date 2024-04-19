@@ -15,15 +15,14 @@ typedef struct {
 
 // Rivi-rakenne
 typedef struct {
-    char arvot[MAX_SARAKKEET][MAX_ARVO_PITUUS]; // Arvot kullekin sarakkeelle
+    char *arvot[MAX_ARVO_PITUUS]; // Arvot kullekin sarakkeelle
 } Rivi;
 
 Sarake *alusta_sarakkeet(const char *tiedostonimi);
-Rivi **alusta_rivit(const char *tiedostonimi, Sarake *sarakkeet, int *rivien_maara_ptr);
+Rivi **alusta_rivit(const char *tiedostonimi, int *rivien_maara_ptr);
 int laske_rivien_lkm(const char *tiedostonimi);
-char ***hae_sarakkeiden_arvot(const char *tiedostonimi, int *rivien_maara_ptr, int *sarakkeiden_maara_ptr);
-void tulosta_sarakkeiden_arvot(char ***sarakkeiden_arvot, int rivien_maara, int sarakkeiden_maara);
 void tulosta_rivi(Rivi *rivi, int sarakkeiden_maara);
-int laske_erilaiset_arvot(Rivi **rivit, int rivien_maara, char ***taulukko);
+int nayta_erilaiset_arvot(Rivi **rivit, int rivien_maara, int sarakkeen_indeksi);
+void vapauta_muisti(Rivi **rivit, Sarake *sarakkeet);
 
 #endif /* CSV_READER_H */
