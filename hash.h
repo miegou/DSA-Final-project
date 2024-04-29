@@ -6,6 +6,7 @@
 
 extern int hajautettavan_arvon_indeksi;
 extern int rivien_maara;
+extern int rivien_maara;
 
 //Määrittele RiviNode-rakenne
 typedef struct RiviNode {
