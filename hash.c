@@ -36,6 +36,22 @@ HashTable *luo_uusi_hajautustaulu() {
     return uusi_ht;
 }
 
+// Funktio hajautustaulun luomiseen
+HashTable *luo_uusi_hajautustaulu() {
+    HashTable *uusi_ht = malloc(sizeof(HashTable));
+    if (uusi_ht == NULL) {
+        perror("Muistin varaaminen epäonnistui");
+        exit(EXIT_FAILURE);
+    }
+
+    // Alusta hajautustaulun arvot
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        uusi_ht->hash_arvot[i] = 0; // Voit alustaa arvot haluamallasi tavalla
+    }
+    printf("Hajautustaulu luotu\n");
+    return uusi_ht;
+}
+
 
 unsigned int laske_hash(char *s) {
    unsigned hash = 0;
@@ -62,6 +78,7 @@ void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara,
         char *nimi = rivit[rivi_indeksi]->arvot[rivin_indeksi_kategorialle];
         int hash = laske_hash(nimi) % HASH_TAULUN_KOKO; // Laske hash-arvo ja moduloi taulukon koon kanssa
         
+        // Luodaan uusi RiviNode
         // Luodaan uusi RiviNode
         RiviNode *new_node = malloc(sizeof(RiviNode));
         if (new_node == NULL) {

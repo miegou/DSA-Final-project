@@ -6,6 +6,7 @@
 
 extern int hajautettavan_arvon_indeksi;
 extern int rivien_maara;
+extern int rivien_maara;
 
 //Määrittele RiviNode-rakenne
 typedef struct RiviNode {
@@ -30,6 +31,7 @@ typedef struct {
 void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int sarakkeen_indeksi);
 void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku);
 HashTable * luo_hajautustaulu();
+HashTable *luo_uusi_hajautustaulu();
 HashTable *luo_uusi_hajautustaulu();
 //void vapauta_hajautustaulu(HashTable *ht);
 //void vapauta_sarakkeen_rivit(RiviNode *rivit);
