@@ -1,9 +1,10 @@
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}} }%%
-flowchart LR
-    markdown["`This **is** _Markdown_`"]
-    newLines["`Line1
-    Line 2
-    Line 3`"]
-    markdown --> newLines
+graph TD;
+    A[Hash Table] -->|1| B[Hash Function];
+    B -->|2| C[Hash Value];
+    C -->|3| D[Array Index];
+    D -->|4| E[Store Key-Value Pair];
+    E -->|5| F[Retrieve Value by Key];
+    F -->|6| G[Return Value];
+
 ```

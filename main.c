@@ -11,7 +11,7 @@ int main() {
     const char *tiedostonimi = TIEDOSTONIMI;
     Rivi **rivit = NULL;
     ArvoJnr *arvot;
-    int hajautettavan_arvon_indeksi = 0;
+    int rivin_indeksi_kategorialle = 0;
     int uuden_indeksi = 0;
 
     // Alusta sarakkeet ja rivit
@@ -25,24 +25,40 @@ int main() {
     }
     //Kysytään käyttäjältä sarakkeen indeksi
     printf("Millä kategorialla haluat rajata hakuasi? Valitse sarakkeen indeksi:\n");
-    scanf("%d", &hajautettavan_arvon_indeksi);
+    scanf("%d", &rivin_indeksi_kategorialle);
 
     // Laske erilaisten arvojen määrä
-    //int erilaisten_maara = nayta_erilaiset_arvot(rivit, rivien_maara, hajautettavan_arvon_indeksi);
+    //int erilaisten_maara = nayta_erilaiset_arvot(rivit, rivien_maara, rivin_indeksi_kategorialle);
 
     // Luo hajautustaulu
     HashTable *ht = luo_hajautustaulu();
 
     // Lisää rivit hajautustauluun
-    lisaa_rivit_hajautustauluun(&ht, rivit, rivien_maara, hajautettavan_arvon_indeksi);
+    lisaa_rivit_hajautustauluun(&ht, rivit, rivien_maara, rivin_indeksi_kategorialle);
 
-    //Tulosta mahdolliset luokat
-    printf("Löytyi %d erilaista luokkaa\n", nayta_erilaiset_arvot(rivit, rivien_maara, hajautettavan_arvon_indeksi));
+    // 
+    arvot = luo_arvojnr_listasta(ht, rivin_indeksi_kategorialle);
+
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        if (arvot[i].arvo != NULL && arvot[i].jnr != -1) {
+            printf("%d: %s\n", arvot[i].jnr, arvot[i].arvo);
+        }
+    }
+
     printf("Missä luokassa haluat jatkaa hakuasi? Valitse indeksi:\n");
-    scanf("%d", &hajautettavan_arvon_indeksi);
-    printf("Löytyi %d tuotetta\n", laske_erilaiset_arvot(ht, hajautettavan_arvon_indeksi));
-    int jatka = 1; // Alustetaan jatkamismuuttuja
+    scanf("%d", &rivin_indeksi_kategorialle);
 
+
+    jaa_hajautustaulu_uudelleen(&ht, arvot, rivin_indeksi_kategorialle);
+    arvot = luo_arvojnr_listasta(ht, rivin_indeksi_kategorialle);
+
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        if (arvot[i].arvo != NULL && arvot[i].jnr != -1) {
+            printf("%d: %s\n", arvot[i].jnr, arvot[i].arvo);
+        }
+    }
+    
+    int jatka = 1; // Alustetaan jatkamismuuttuja ykköseksi
     while (jatka) {
         printf("Haluatko tarkentaa hakua? (1 = kyllä, 0 = ei)\n");
         int valinta;
@@ -53,19 +69,25 @@ int main() {
                 printf("%d. %s\n", i, sarakkeet[i].nimi);
             }
             printf("Millä kategorialla haluat rajata seuraavaksi, valitse indeksi:\n");
-            int uuden_indeksi;
-            scanf("%d", &uuden_indeksi);
-            arvot = nayta_erilaiset_arvot_karsituista(ht, hajautettavan_arvon_indeksi, uuden_indeksi);
-            //printf("Löytyi %d tuotetta\n", laske_erilaiset_arvot(ht, uuden_indeksi));
-            jaa_hajautustaulu_uudelleen(&ht, hajautettavan_arvon_indeksi, uuden_indeksi);
-            //printf("Löytyi %d erilaista luokkaa\n", nayta_erilaiset_arvot_karsituista(ht, hajautettavan_arvon_indeksi, uuden_indeksi, &erilaisten_maara));
+
+
+            // arvot = luo_arvojnr_listasta(ht, rivin_indeksi_kategorialle);
+            //     for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+            //         if (arvot[i].arvo != NULL && arvot[i].jnr != -1) {
+            //             printf("%d: %s\n", arvot[i].jnr, arvot[i].arvo);
+            //         }
+            //     }
+            
+            printf("Missä luokassa haluat jatkaa hakuasi? Valitse indeksi:\n");
+            scanf("%d", &rivin_indeksi_kategorialle);
+            printf("Löytyi %d tuotetta\n", laske_erilaiset_arvot(ht, arvot, rivin_indeksi_kategorialle));
         } else {
             jatka = 0; // Asetetaan jatkamismuuttuja nollaksi, jos käyttäjä ei halua enää tarkentaa hakua
         }
     }
 
     // Hae arvoa hajautustaulusta
-    //nayta_erilaiset_arvot_karsituista(ht, hajautettavan_arvon_indeksi, uuden_indeksi, &erilaisten_maara);
+    //nayta_erilaiset_arvot_karsituista(ht, rivin_indeksi_kategorialle, uuden_indeksi, &erilaisten_maara);
     // printf("Millä arvolla haluat nähdä tuotteet?\n");
     // printf("Anna indeksi:\n");
     // scanf("%d", &uuden_indeksi);
