@@ -275,7 +275,7 @@ ArvoJnr *nayta_erilaiset_arvot_karsituista(HashTable *ht, int rivin_indeksi_kate
 
 
 
-void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku) {
+void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku, int sarakkeen_indeksi) {
     HashTable *alkuperaiset = *alkuperaiset_ht;
     HashTable *uusi_ht = luo_uusi_hajautustaulu();
     
@@ -302,81 +302,60 @@ void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, in
         return;
     }
 
-// Tulosta alkuperäisen hajautustaulun solmut ja niiden arvot
-printf("Alkuperäisen hajautustaulun solmut:\n");
-for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-    RiviNode *current = alkuperaiset->hash_arvot[i];
+    // Käy läpi vain annetun indeksin solmut alkuperäisessä hajautustaulussa
+    RiviNode *current = alkuperaiset->hash_arvot[jarjestysluku];
     while (current != NULL) {
-        if (current->rivi != NULL && current->rivi->arvot != NULL) {
-            if (current->rivi->arvot[jarjestysluku] != NULL) {
-                printf("Solmu löydetty: %s\n", current->rivi->arvot[jarjestysluku]);
-            } else {
-                printf("Solmu löydetty, mutta sen arvo on NULL.\n");
+        if (current->rivi->arvot[sarakkeen_indeksi] != NULL) {
+            char *uuden_indeksin_arvo = current->rivi->arvot[sarakkeen_indeksi];
+            // Lasketaan hash uuden indeksin arvon perusteella
+            int hash = laske_hash(uuden_indeksin_arvo) % HASH_TAULUN_KOKO;
+            
+            // Luodaan uusi solmu
+            RiviNode *new_node = malloc(sizeof(RiviNode));
+            if (new_node == NULL) {
+                perror("Muistin varaus epäonnistui");
+                exit(EXIT_FAILURE);
             }
-        } else {
-            printf("Virhe: Solmu tai sen arvot eivät ole alustettuja.\n");
+            new_node->rivi = current->rivi;
+            new_node->next = NULL;
+            new_node->nimi = strdup(uuden_indeksin_arvo);
+            
+            // Tarkista, onko hash-arvon kohdalla jo lista
+            if (uusi_ht->hash_arvot[hash] == NULL) {
+                // Jos hash-arvon kohdalla ei ole vielä listaa, lisää uusi solmu sinne
+                uusi_ht->hash_arvot[hash] = new_node;
+            } else {
+                // Jos hash-arvon kohdalla on jo lista, käytä avointa hajautusta
+                int index = hash;
+                int askelia = 0;
+                while (askelia < HASH_TAULUN_KOKO) {
+                    RiviNode *existing_node = uusi_ht->hash_arvot[index];
+                    if (existing_node == NULL) {
+                        // Jos löydettiin vapaa indeksi, lisätään solmu siihen
+                        uusi_ht->hash_arvot[index] = new_node;
+                        break;
+                    } else if (strcmp(existing_node->nimi, uuden_indeksin_arvo) == 0) {
+                        // Jos solmun nimi on sama kuin uuden solmun nimi, lisää solmu listaan
+                        while (existing_node->next != NULL) {
+                            existing_node = existing_node->next;
+                        }
+                        existing_node->next = new_node;
+                        break;
+                    } else {
+                        // Jos solmun nimi ei ole sama, jatka seuraavaan indeksiin
+                        index = (index + 1) % HASH_TAULUN_KOKO;
+                        askelia++;
+                    }
+                }
+                // Tarkista, jos taulukko on täynnä
+                if (askelia == HASH_TAULUN_KOKO) {
+                    printf("Taulukko on täynnä, lisäys epäonnistui.\n");
+                    free(new_node->nimi);
+                    free(new_node);
+                }
+            }
         }
         current = current->next;
-    }
-}
-
-
-    // Käy läpi alkuperäisen hajautustaulun solmut
-    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        RiviNode *current = alkuperaiset->hash_arvot[i];
-        while (current != NULL) {
-            if (current->rivi->arvot[jarjestysluku] != NULL) {
-                char *uuden_indeksin_arvo = current->rivi->arvot[jarjestysluku];
-                // Lasketaan hash uuden indeksin arvon perusteella
-                int hash = laske_hash(uuden_indeksin_arvo) % HASH_TAULUN_KOKO;
-                
-                // Luodaan uusi solmu
-                RiviNode *new_node = malloc(sizeof(RiviNode));
-                if (new_node == NULL) {
-                    perror("Muistin varaus epäonnistui");
-                    exit(EXIT_FAILURE);
-                }
-                new_node->rivi = current->rivi;
-                new_node->next = NULL;
-                new_node->nimi = strdup(uuden_indeksin_arvo);
-                
-                // Tarkista, onko hash-arvon kohdalla jo lista
-                if (uusi_ht->hash_arvot[hash] == NULL) {
-                    // Jos hash-arvon kohdalla ei ole vielä listaa, lisää uusi solmu sinne
-                    uusi_ht->hash_arvot[hash] = new_node;
-                } else {
-                    // Jos hash-arvon kohdalla on jo lista, käytä avointa hajautusta
-                    int index = hash;
-                    int askelia = 0;
-                    while (askelia < HASH_TAULUN_KOKO) {
-                        RiviNode *existing_node = uusi_ht->hash_arvot[index];
-                        if (existing_node == NULL) {
-                            // Jos löydettiin vapaa indeksi, lisätään solmu siihen
-                            uusi_ht->hash_arvot[index] = new_node;
-                            break;
-                        } else if (strcmp(existing_node->nimi, uuden_indeksin_arvo) == 0) {
-                            // Jos solmun nimi on sama kuin uuden solmun nimi, lisää solmu listaan
-                            while (existing_node->next != NULL) {
-                                existing_node = existing_node->next;
-                            }
-                            existing_node->next = new_node;
-                            break;
-                        } else {
-                            // Jos solmun nimi ei ole sama, jatka seuraavaan indeksiin
-                            index = (index + 1) % HASH_TAULUN_KOKO;
-                            askelia++;
-                        }
-                    }
-                    // Tarkista, jos taulukko on täynnä
-                    if (askelia == HASH_TAULUN_KOKO) {
-                        printf("Taulukko on täynnä, lisäys epäonnistui.\n");
-                        free(new_node->nimi);
-                        free(new_node);
-                    }
-                }
-            }
-            current = current->next;
-        }
     }
     
     // Vaihda alkuperäisen hajautustaulun osoitin uuteen

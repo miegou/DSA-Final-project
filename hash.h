@@ -29,7 +29,7 @@ typedef struct {
 
 //void lisaa_sarakkeet_hajautustauluun(HashTable *ht, Sarake *sarakkeet);
 void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int sarakkeen_indeksi);
-void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku);
+void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku, int sarakkeen_indeksi);
 HashTable * luo_hajautustaulu();
 HashTable *luo_uusi_hajautustaulu();
 //void vapauta_hajautustaulu(HashTable *ht);
