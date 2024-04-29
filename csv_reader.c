@@ -176,10 +176,6 @@ int nayta_erilaiset_arvot(Rivi **rivit, int rivien_maara, int sarakkeen_indeksi)
     for (int i = 0; i < erilaisten_maara; i++) {
         printf("%d. %s\n", laske_hash(rivit[i]->arvot[sarakkeen_indeksi]), rivit[i]->arvot[sarakkeen_indeksi]);
     }
-    //Tulosta lista erilaisista arvoista
-    // for (int i = 0; i < erilaisten_maara; i++) {
-    //     printf("%d. %s\n", i+1, rivit[i]->arvot[sarakkeen_indeksi]);
-    // }
 
     return erilaisten_maara;
 }

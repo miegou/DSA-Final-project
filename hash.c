@@ -37,7 +37,7 @@ HashTable *luo_uusi_hajautustaulu() {
     return uusi_ht;
 }
 
-
+// Funktio hajautusarvon laskemiseen
 unsigned int laske_hash(char *s) {
    unsigned hash = 0;
 
@@ -57,13 +57,12 @@ unsigned int laske_hash(char *s) {
     return hash;
 }
 
-
+// Funktio rivien lisäämiseen hajautustauluun
 void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int rivin_indeksi_kategorialle) {
     for (int rivi_indeksi = 0; rivi_indeksi < rivien_maara; rivi_indeksi++) {
         char *nimi = rivit[rivi_indeksi]->arvot[rivin_indeksi_kategorialle];
         int hash = laske_hash(nimi) % HASH_TAULUN_KOKO; // Laske hash-arvo ja moduloi taulukon koon kanssa
         
-        // Luodaan uusi RiviNode
         // Luodaan uusi RiviNode
         RiviNode *new_node = malloc(sizeof(RiviNode));
         if (new_node == NULL) {
@@ -75,9 +74,6 @@ void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara,
 
         // Asetetaan uuden solmun nimeksi sarakkeen indeksin arvo
         new_node->nimi = strdup(nimi);
-
-        // Tulosta lisättävän rivin arvo ja siihen verrattava arvo
-        //printf("Lisättävä arvo: %s, verrataan hash-arvon kohdalla olevaan arvoon.\n", nimi);
 
 
         // Tarkista, onko hash-arvon kohdalla jo lista
@@ -119,68 +115,67 @@ void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara,
 }
 
 
-
+// Funktio hajautustaulle varatun muistin vapauttamiseen
 void vapauta_hajautustaulu(HashTable *ht) {
     for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
         RiviNode *current = ht->hash_arvot[i];
         while (current != NULL) {
             RiviNode *temp = current;
             current = current->next;
-            free(temp->nimi); // Vapauta nimi-merkkijono
-            free(temp);       // Vapauta RiviNode-solmu
+            free(temp->nimi);
+            free(temp);
         }
     }
-    free(ht); // Vapauta itse hajautustaulu
+    free(ht);
 }
 
-void hae_arvoa_hajautustaulusta(HashTable *ht, ArvoJnr *arvot) {
-    int valittu_jnr;
-    printf("Syötä haluamasi arvon järjestysnumero: ");
-    scanf("%d", &valittu_jnr);
+// Funktio hajautustaulun arvojen hakemiseen
+void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi) {
+    // Etsi oikea rakenne tallennettujen arvojen joukosta, joka vastaa annettua järjestysnumeroa
+    char *etsittava_arvo = NULL;
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        if (erilaiset_arvot_jnroilla[i].jnr == numeroindeksi) {
+            etsittava_arvo = erilaiset_arvot_jnroilla[i].arvo;
+            break;
+        }
+    }
 
-    char *etsittava_arvo = arvot[valittu_jnr - 1].arvo; // Vähennä yksi, koska indeksit alkavat nollasta
+    // Jos annettu järjestysnumero ei vastaa tallennettua arvoa, tulosta virheilmoitus ja palaa
+    if (etsittava_arvo == NULL) {
+        printf("Arvoa järjestysnumerolla %d ei löytynyt rakenteesta.\n", numeroindeksi);
+        return;
+    }
+
+    // Laske hash-arvo annetusta arvosta
     int hash = laske_hash(etsittava_arvo) % HASH_TAULUN_KOKO;
 
-    // Aloita haku oletetusta indeksistä
-    // Tarkista ensin, että oletettu rivin_indeksi_kategorialle on validi
-    if (ht->hash_arvot[hash] != NULL && strcmp(ht->hash_arvot[hash]->nimi, etsittava_arvo) == 0) {
-        // Tulosta kaikki solmut linkitetystä listasta
-        printf("Löytyi arvo: %s\n", etsittava_arvo);
-        RiviNode *current = ht->hash_arvot[hash];
-        while (current != NULL) {
-            for (int j = 0; j < MAX_SARAKKEET; j++) {
-                printf("%s\n", current->rivi->arvot[j]);
-            }
-            printf("\n");
-            current = current->next;
-        }
-        return; // Lopeta funktio, kun arvo on löydetty ja tulostettu
+    // Tarkista, vastaako hajautustaulun indeksin ensimmäisen solmun arvo etsittyä arvoa
+    while (ht->hash_arvot[hash] != NULL && strcmp(ht->hash_arvot[hash]->nimi, etsittava_arvo) != 0) {
+        hash = (hash + 1) % HASH_TAULUN_KOKO;
     }
 
-    // Jos oletettu rivin_indeksi_kategorialle ei sisällä etsittävää arvoa, jatka haku seuraavista indekseistä
-    for (int i = (hash + 1) % HASH_TAULUN_KOKO; i != hash; i = (i + 1) % HASH_TAULUN_KOKO) {
-        // Tarkista, että indeksissä on solmu ja sen arvo täsmää etsittävän arvon kanssa
-        if (ht->hash_arvot[i] != NULL && strcmp(ht->hash_arvot[i]->nimi, etsittava_arvo) == 0) {
-            // Tulosta kaikki solmut linkitetystä listasta
-            printf("Löytyi arvo: %s\n", etsittava_arvo);
-            RiviNode *current = ht->hash_arvot[i];
-            while (current != NULL) {
-                for (int j = 0; j < MAX_SARAKKEET; j++) {
-                    printf("%s\n", current->rivi->arvot[j]);
-                }
-                printf("\n");
-                current = current->next;
-            }
-            return; // Lopeta funktio, kun arvo on löydetty ja tulostettu
-        }
+    // Jos hash-arvo ei vastaa etsittävää arvoa, tulosta virheilmoitus ja palaa
+    if (ht->hash_arvot[hash] == NULL) {
+        printf("Arvoa %s ei löytynyt hajautustaulusta.\n", etsittava_arvo);
+        return;
     }
 
-    // Jos arvoa ei löytynyt hajautustaulusta, tulosta ilmoitus
-    printf("Arvoa %s ei löytynyt hajautustaulusta.\n", etsittava_arvo);
+    // Tulosta löydetyt arvot
+    printf("Löydettiin arvo: %s\n", etsittava_arvo);
+    RiviNode *current = ht->hash_arvot[hash];
+    while (current != NULL) {
+        // Tulosta kaikki arvot linkitetystä listasta
+        for (int j = 0; j < MAX_SARAKKEET; j++) {
+            printf("%s\n", current->rivi->arvot[j]);
+        }
+        printf("\n");
+        current = current->next;
+    }
 }
 
 
 
+// Funktio erilaisten arvojen laskemiseen
 int laske_erilaiset_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi) {
     int erilaisten_maara = 0;
 
@@ -236,7 +231,7 @@ ArvoJnr *nayta_erilaiset_arvot_karsituista(HashTable *ht, int rivin_indeksi_kate
         erilaiset_arvot_jnroilla[i].arvo = NULL;
         erilaiset_arvot_jnroilla[i].jnr = -1;
     }
-
+    // Alusta muuttujat
     int erilaisten_maara = 0;
     int jnr = 0;
     int *indeksit = malloc(sizeof(int) * HASH_TAULUN_KOKO); // Tallentaa käsitellyt indeksit
@@ -274,7 +269,7 @@ ArvoJnr *nayta_erilaiset_arvot_karsituista(HashTable *ht, int rivin_indeksi_kate
 }
 
 
-
+// Funktio hajautustaulun uudelleen jakamiseen
 void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku, int sarakkeen_indeksi) {
     HashTable *alkuperaiset = *alkuperaiset_ht;
     HashTable *uusi_ht = luo_uusi_hajautustaulu();
@@ -282,9 +277,11 @@ void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, in
     printf("Järjestysluku: %d\n", jarjestysluku);
     // Etsi annetulla järjestysluvulla vastaava arvo ArvoJnr-rakenteesta
     char *haluttu_arvo = NULL;
+    int indeksi = 0; // Declare the "indeksi" variable
     if (jarjestysluku >= 0 && jarjestysluku < HASH_TAULUN_KOKO) {
         if (arvot[jarjestysluku].jnr == jarjestysluku) {
             haluttu_arvo = arvot[jarjestysluku].arvo;
+            indeksi = arvot[jarjestysluku].tallennus_indeksi; // Assign a value to "indeksi"
         } else {
             printf("Virhe: Haluttua arvoa ei löytynyt annetulla järjestysluvulla. ArvoJnr-rakenteen jnr: %d, annettu järjestysluku: %d\n", arvot[jarjestysluku].jnr, jarjestysluku);
             return;
@@ -303,7 +300,7 @@ void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, in
     }
 
     // Käy läpi vain annetun indeksin solmut alkuperäisessä hajautustaulussa
-    RiviNode *current = alkuperaiset->hash_arvot[jarjestysluku];
+    RiviNode *current = alkuperaiset->hash_arvot[indeksi];
     while (current != NULL) {
         if (current->rivi->arvot[sarakkeen_indeksi] != NULL) {
             char *uuden_indeksin_arvo = current->rivi->arvot[sarakkeen_indeksi];
@@ -357,15 +354,14 @@ void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, in
         }
         current = current->next;
     }
-    
+
     // Vaihda alkuperäisen hajautustaulun osoitin uuteen
     *alkuperaiset_ht = uusi_ht;
     printf("Hajautustaulu jaettu uudelleen\n");
 }
 
 
-
-
+// Funktio erilaisten arvojen luomiseen ArvoJnr-rakenteesta
 ArvoJnr *luo_arvojnr_listasta(HashTable *ht, int rivin_indeksi_kategorialle) {
     ArvoJnr *erilaiset_arvot_jnroilla = malloc(sizeof(ArvoJnr) * HASH_TAULUN_KOKO);
     if (erilaiset_arvot_jnroilla == NULL) {
@@ -408,9 +404,15 @@ ArvoJnr *luo_arvojnr_listasta(HashTable *ht, int rivin_indeksi_kategorialle) {
             }
         }
     }
-
     free(indeksit); // Vapauta indeksitaulu
-
     return erilaiset_arvot_jnroilla;
 }
 
+// Tulostaa ArvoJnr-rakenteen arvot
+void tulosta_arvojnr_lista(ArvoJnr *arvot) {
+    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
+        if (arvot[i].arvo != NULL && arvot[i].jnr != -1) {
+            printf("%d: %s\n", arvot[i].jnr, arvot[i].arvo);
+        }
+    }
+}
