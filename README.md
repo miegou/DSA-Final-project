@@ -68,28 +68,28 @@ graph TD;
 
 Ohjelma tarjoaa seuraavia toiminnallisuuksia käyttäjälle:
 
-- Arvon haku hajautustaulusta (hae_arvoa_hajautustaulusta)
-- Erilaisten arvojen laskeminen hajautustaulusta (laske_erilaiset_arvot)
+- Arvon haku hajautustaulusta (`hae_arvoa_hajautustaulusta()`)
+- Erilaisten arvojen laskeminen hajautustaulusta (`laske_erilaiset_arvot()`)
 
 Muut toiminnallisuudet mitä ohjelma sisältää (ei käyttäjälle):
 
-- Hajautustaulun uudelleenjako (jaa_hajautustaulu_uudelleen)
-- Erilaisten arvojen näyttäminen karsituista (nayta_erilaiset_arvot_karsituista)
-- ArvoJnr-listan luominen (luo_arvojnr_listasta)
+- Hajautustaulun uudelleenjako (`jaa_hajautustaulu_uudelleen()`)
+- Erilaisten arvojen näyttäminen karsituista (`nayta_erilaiset_arvot_karsituista()`)
+- ArvoJnr-listan luominen (`luo_arvojnr_listasta()`)
 
 #### Pääohjelma
 
-Pääohjelma (main.c) käynnistää ohjelman ja tarjoaa käyttöliittymän, josta käyttäjä voi valita haluamansa toiminnallisuuden.
+Pääohjelma (`main.c()`) käynnistää ohjelman ja tarjoaa käyttöliittymän, josta käyttäjä voi valita haluamansa toiminnallisuuden.
 
 ## Käyttö
 
 1. Käynnistä ohjelma ja valitse haluamasi toiminto.
 2. Noudata ohjeita näytöllä.
 
-### <span style="color:red">! HUOMIOITAVAA !</span>
+### ! HUOMIOITAVAA !
 
     ! Ohjelma on suunniteltu toimimaan CSV-tiedostojen kanssa.
     ! Tiedoston lukemiseen ja hajautustaulun käyttöön on toteutettu erilliset moduulit.
-    ! Hajautustaulun koon (HASH_TAULUN_KOKO) muuttaminen voi vaikuttaa ohjelman suorituskykyyn.
+    ! Hajautustaulun koon muuttaminen voi vaikuttaa ohjelman suorituskykyyn.
 
 ## Yhteenveto
