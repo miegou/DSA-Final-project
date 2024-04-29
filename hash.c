@@ -63,6 +63,7 @@ void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara,
         char *nimi = rivit[rivi_indeksi]->arvot[rivin_indeksi_kategorialle];
         int hash = laske_hash(nimi) % HASH_TAULUN_KOKO; // Laske hash-arvo ja moduloi taulukon koon kanssa
         
+
         // Luodaan uusi RiviNode
         RiviNode *new_node = malloc(sizeof(RiviNode));
         if (new_node == NULL) {
@@ -130,7 +131,7 @@ void vapauta_hajautustaulu(HashTable *ht) {
 }
 
 // Funktio hajautustaulun arvojen hakemiseen
-void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi) {
+void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi, Sarake *sarakkeet) {
     // Etsi oikea rakenne tallennettujen arvojen joukosta, joka vastaa annettua järjestysnumeroa
     char *etsittava_arvo = NULL;
     for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
@@ -160,13 +161,15 @@ void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroi
         return;
     }
 
-    // Tulosta löydetyt arvot
+ // Tulosta löydetyt arvot
     printf("Löydettiin arvo: %s\n", etsittava_arvo);
     RiviNode *current = ht->hash_arvot[hash];
     while (current != NULL) {
-        // Tulosta kaikki arvot linkitetystä listasta
+        // Tulosta kaikki arvot linkitetystä listasta, jos ne eivät ole "ei arvoa"
         for (int j = 0; j < MAX_SARAKKEET; j++) {
-            printf("%s\n", current->rivi->arvot[j]);
+            if (strcmp(current->rivi->arvot[j], "ei arvoa") != 0) {
+                printf("%s: %s\n", sarakkeet[j].nimi, current->rivi->arvot[j]);
+            }
         }
         printf("\n");
         current = current->next;

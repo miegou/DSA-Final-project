@@ -38,7 +38,7 @@ void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, in
 //void vapauta_sarakkeen_rivit(RiviNode *rivit);
 
 void vapauta_hajautustaulu(HashTable *ht);
-void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi);
+void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi, Sarake *sarakkeet);
 //void hae_arvoa_hajautustaulusta(HashTable *ht, ArvoJnr *arvot);
 int laske_erilaiset_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi);
 

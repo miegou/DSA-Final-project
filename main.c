@@ -35,17 +35,10 @@ int main() {
     lisaa_rivit_hajautustauluun(&ht, rivit, rivien_maara, otsikon_rivi_indeksi);
     
 
-    // 
+    //  Luo arvojnr-lista
     arvot = luo_arvojnr_listasta(ht, otsikon_rivi_indeksi);
 
-
     tulosta_arvojnr_lista(arvot);
-    // for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-    //     if (arvot[i].arvo != NULL && arvot[i].jnr != -1) {
-    //         printf("%d: %s\n", arvot[i].jnr, arvot[i].arvo);
-    //     }
-    // }
-
 
     printf("Missä luokassa haluat jatkaa hakuasi? Valitse indeksi:\n");
     scanf("%d", &arvon_indeksi_rivilla);
@@ -80,7 +73,7 @@ int main() {
         }
     }
 
-    tulosta_arvot(ht, arvot, arvon_indeksi_rivilla);
+    tulosta_arvot(ht, arvot, arvon_indeksi_rivilla, sarakkeet);
 
     // Vapauta dynaamisesti varatut muistit
     vapauta_muisti(rivit, sarakkeet);
