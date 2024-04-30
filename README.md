@@ -2,7 +2,7 @@
 
 Algoritmit ja Tietorakenteet - Kurssin Lopputyö
 
-![screenshot](logomato.png)
+![screenshot](./DSA%20FINAL%20PROJECT/logomato.png)
 
 ## Tarkoitus
 
