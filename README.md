@@ -79,7 +79,7 @@ otetaan niistä talteen solmun arvo, järjestysnumero sekä tallennusindeksi ja 
 
 Tämä mahdollistaa sen, että käyttäjä voi valita listasta haluamansa arvon järjestysnumeron perusteella.
 
-Koska rakenteeseen tallennetaan myös hajautustaulun tallennusindeksi niin sitä voidaan käyttää, kun haetaan tiettyä arvoa hajautustaulusta. Tämä nopeuttaa hakutoimintaa. 
+Koska rakenteeseen tallennetaan myös hajautustaulun tallennusindeksi niin sitä voidaan käyttää, kun haetaan tiettyä arvoa hajautustaulusta. Tämä nopeuttaa hakutoimintaa O(1). 
 
 ## Hajautustauluun lisääminen seuraavilla kierroksilla:
 
