@@ -2,6 +2,7 @@
 #define HASH_H
 #include "csv_reader.h"
 
+// Hajautustaulun koko
 #define HASH_TAULUN_KOKO 160
 
 extern int hajautettavan_arvon_indeksi;
@@ -33,16 +34,9 @@ HashTable *luo_uusi_hajautustaulu();
 unsigned int laske_hash(char *s);
 void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int sarakkeen_indeksi);
 void jaa_hajautustaulu_uudelleen(HashTable **alkuperaiset_ht, ArvoJnr *arvot, int jarjestysluku, int sarakkeen_indeksi);
-
-
-//void vapauta_sarakkeen_rivit(RiviNode *rivit);
-
 void vapauta_hajautustaulu(HashTable *ht);
 void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi, Sarake *sarakkeet);
-//void hae_arvoa_hajautustaulusta(HashTable *ht, ArvoJnr *arvot);
 int laske_erilaiset_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi);
-
-ArvoJnr *nayta_erilaiset_arvot_karsituista(HashTable *ht, int rivin_indeksi_kategorialle);
 ArvoJnr *luo_arvojnr_listasta(HashTable *ht, int rivin_indeksi_kategorialle);
 void tulosta_arvojnr_lista(ArvoJnr *arvot);
 #endif
