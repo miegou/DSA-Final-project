@@ -4,8 +4,8 @@
 #include "csv_reader.h"
 #include "hash.h"
 
+// Tiedoston rivien määrä
 extern int rivien_maara;
-
 
 // Alustaa sarakkeet annetusta tiedostosta
 Sarake *alusta_sarakkeet(const char *tiedostonimi) {
@@ -46,7 +46,6 @@ Sarake *alusta_sarakkeet(const char *tiedostonimi) {
     fclose(tiedosto);
     return sarakkeet;
 }
-
 
 Rivi *alusta_rivi(char *rivi_str, int sarakkeiden_maara) {
     // Alustetaan uusi Rivi-rakenne
@@ -142,44 +141,12 @@ Rivi **alusta_rivit(const char *tiedostonimi, int *rivien_maara_ptr) {
     return rivit;
 }
 
-
-
 // Palauttaa rivin tiedot
 void tulosta_rivi(Rivi *rivi, int sarakkeiden_maara) {
     for (int i = 0; i < sarakkeiden_maara; i++) {
         printf("%s\n", rivi->arvot[i]);
-    }
-    
+    } 
 }
-
-int nayta_erilaiset_arvot(Rivi **rivit, int rivien_maara, int sarakkeen_indeksi) {
-    int erilaisten_maara = 0;
-
-    // Käy läpi rivit ja tallenna erilaiset arvot pyydetyssä sarakkeessa
-    for (int rivi_indeksi = 0; rivi_indeksi < rivien_maara; rivi_indeksi++) {
-        char *sarake = rivit[rivi_indeksi]->arvot[sarakkeen_indeksi];
-        int loydetty = 0;
-        // Tarkista, onko arvo jo olemassa
-        for (int i = 0; i < erilaisten_maara; i++) {
-            if (strcmp(rivit[i]->arvot[sarakkeen_indeksi], sarake) == 0) {
-                loydetty = 1;
-                break;
-            }
-        }
-        // Jos arvoa ei löydy, lisää se listaan
-        if (!loydetty) {
-            strcpy(rivit[erilaisten_maara]->arvot[sarakkeen_indeksi], sarake);
-            erilaisten_maara++;
-        }
-    }
-    // //Tulosta lista erilaisista arvoista
-    for (int i = 0; i < erilaisten_maara; i++) {
-        printf("%d. %s\n", laske_hash(rivit[i]->arvot[sarakkeen_indeksi]), rivit[i]->arvot[sarakkeen_indeksi]);
-    }
-
-    return erilaisten_maara;
-}
-
 
 // Vapauttaa dynaamisesti varatun muistin
 void vapauta_muisti(Rivi **rivit, Sarake *sarakkeet) {

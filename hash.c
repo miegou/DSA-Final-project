@@ -14,7 +14,7 @@ HashTable *luo_hajautustaulu() {
 
     // Alusta hajautustaulun arvot
     for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        ht->hash_arvot[i] = 0; // Voit alustaa arvot haluamallasi tavalla
+        ht->hash_arvot[i] = 0;
     }
     printf("Hajautustaulu alustettu\n");
     return ht;
@@ -31,7 +31,7 @@ HashTable *luo_uusi_hajautustaulu() {
 
     // Alusta hajautustaulun arvot
     for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        uusi_ht->hash_arvot[i] = 0; // Voit alustaa arvot haluamallasi tavalla
+        uusi_ht->hash_arvot[i] = 0;
     }
     printf("Hajautustaulu luotu\n");
     return uusi_ht;
@@ -41,21 +41,22 @@ HashTable *luo_uusi_hajautustaulu() {
 unsigned int laske_hash(char *s) {
    unsigned hash = 0;
 
-    for(; *s; ++s)
+    for(; *s; ++s) // Käydään läpi merkkijono s, kunnes saavutetaan null-terminaattori ('\0')
     {
-        hash += *s;
-        hash += (hash << 10);
-        hash ^= (hash >> 6);
+        hash += *s; // Lisätään merkin ASCII-arvo hash-muuttujaan
+        hash += (hash << 10); // Sekoitusoperaatio: vasemmalle siirtäminen ja lisäys hash-arvoon
+        hash ^= (hash >> 6); // Sekoitusoperaatio: bittien XOR-poisto hash-arvosta
     }
 
-    hash += (hash << 3);
-    hash ^= (hash >> 11);
-    hash += (hash << 15);
+    hash += (hash << 3); // Sekoitusoperaatio: vasemmalle siirtäminen ja lisäys hash-arvoon
+    hash ^= (hash >> 11); // Sekoitusoperaatio: bittien XOR-poisto hash-arvosta
+    hash += (hash << 15); // Sekoitusoperaatio: vasemmalle siirtäminen ja lisäys hash-arvoon
 
-    hash = hash % HASH_TAULUN_KOKO;
+    hash = hash % HASH_TAULUN_KOKO; // Hajautusarvon skaalaus taulukon koon mukaan
 
     return hash;
 }
+
 
 // Funktio rivien lisäämiseen hajautustauluun
 void lisaa_rivit_hajautustauluun(HashTable **ht, Rivi **rivit, int rivien_maara, int rivin_indeksi_kategorialle) {
@@ -177,7 +178,6 @@ void tulosta_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroi
 }
 
 
-
 // Funktio erilaisten arvojen laskemiseen
 int laske_erilaiset_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int numeroindeksi) {
     int erilaisten_maara = 0;
@@ -220,55 +220,6 @@ int laske_erilaiset_arvot(HashTable *ht, ArvoJnr *erilaiset_arvot_jnroilla, int 
     }
 
     return erilaisten_maara;
-}
-
-
-ArvoJnr *nayta_erilaiset_arvot_karsituista(HashTable *ht, int rivin_indeksi_kategorialle) {
-    ArvoJnr *erilaiset_arvot_jnroilla = malloc(sizeof(ArvoJnr) * HASH_TAULUN_KOKO);
-    if (erilaiset_arvot_jnroilla == NULL) {
-        perror("Muistin varaaminen epäonnistui");
-        exit(EXIT_FAILURE);
-    }
-    // Alusta löydetyt arvot
-    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        erilaiset_arvot_jnroilla[i].arvo = NULL;
-        erilaiset_arvot_jnroilla[i].jnr = -1;
-    }
-    // Alusta muuttujat
-    int erilaisten_maara = 0;
-    int jnr = 0;
-    int *indeksit = malloc(sizeof(int) * HASH_TAULUN_KOKO); // Tallentaa käsitellyt indeksit
-
-    // Alusta indeksit
-    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        indeksit[i] = 0;
-    }
-
-    // Käy läpi kaikkien hajautustaulun indeksien ensimmäiset solmut
-    for (int i = 0; i < HASH_TAULUN_KOKO; i++) {
-        if (!indeksit[i]) { // Jos indeksiä ei ole vielä käsitelty
-            RiviNode *current = ht->hash_arvot[i];
-            if (current != NULL) {
-                char *arvo = current->rivi->arvot[rivin_indeksi_kategorialle];
-                // Tulosta testituloste
-                //printf("Indeksi: %d, Ensimmäisen solmun nimi: %s\n", i, current->nimi);
-
-                // Lisää arvo suoraan erilaisten arvojen listaan
-                erilaiset_arvot_jnroilla[erilaisten_maara].arvo = strdup(arvo);
-                erilaiset_arvot_jnroilla[erilaisten_maara].jnr = jnr;
-                printf("%d. %s %d\n", jnr, arvo, laske_hash(arvo));
-                (erilaisten_maara)++;
-                jnr++;
-
-                // Merkitse indeksi käsitellyksi
-                indeksit[i] = 1;
-            }
-        }
-    }
-
-    free(indeksit); // Vapauta indeksitaulu
-
-    return erilaiset_arvot_jnroilla;
 }
 
 
