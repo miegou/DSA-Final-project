@@ -13,7 +13,9 @@ Tämän ohjelman tarkoituksena on demonstroida hajautustaulun käyttöä ja sen 
 #### Miksi päädyttiin hajautustauluun?
 
 Aluksi lähdettiin toteuttamaan AVL-puuta, kun tiedettiin sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin. 
+Aluksi lähdettiin toteuttamaan AVL-puuta, kun tiedettiin sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin. 
 
+Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdettiin toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päätää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätettii tehdä ensin yksi kerroksinen hajaustustaulu jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi jotta rajaaminen olisi tehokkaampaa.
 Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdettiin toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päätää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätettii tehdä ensin yksi kerroksinen hajaustustaulu jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi jotta rajaaminen olisi tehokkaampaa.
 
 
@@ -155,13 +157,38 @@ Ohjelma tarjoaa seuraavia toiminnallisuuksia käyttäjälle:
 
 - Kaikkien tuotteiden laskeminen csv-tiedostosta (`laske_rivien_lkm()`)
 - Rajattujen arvojen tulostus (`tulosta_arvot()`)
+- Kaikkien tuotteiden laskeminen csv-tiedostosta (`laske_rivien_lkm()`)
+- Rajattujen arvojen tulostus (`tulosta_arvot()`)
 - Erilaisten arvojen laskeminen hajautustaulusta (`laske_erilaiset_arvot()`)
 
 ## Käyttö
 1. Käännä ohjelma tai käytä valmiiksi käännettyjä tiedostoja `main` ja `main.exe`.
 2. Käynnistä ohjelma terminaalissa ja noudata ohjeita näytöllä.
+1. Käännä ohjelma tai käytä valmiiksi käännettyjä tiedostoja `main` ja `main.exe`.
+2. Käynnistä ohjelma terminaalissa ja noudata ohjeita näytöllä.
 
 ### ! HUOMIOITAVAA !
+Hajautustaulun koko on 160, joten kaikkia kriteereitä ei voida käyttää suoraan ennen, kun tuotteita on ensin rajattu muilla mahdollisilla haku kriteereillä.
+
+Mahdollisia hakukriteereitä ensimmäiselle haulle ovat:
+- Pullokoko
+- Tyyppi
+- Alatyyppi
+- Erityisryhmä
+- Oluttyyppi
+- Valmistusmaa
+- Alue
+- Vuosikerta
+- Huomautus
+- Pakkaustyyppi
+- Suljentatyyppi
+- Hapot g/l
+- Sokeri g/l
+- Väri EBC
+- Katkerot EBU
+- Energia kcal/100 ml
+- Valikoima
+
 Hajautustaulun koko on 160, joten kaikkia kriteereitä ei voida käyttää suoraan ennen, kun tuotteita on ensin rajattu muilla mahdollisilla haku kriteereillä.
 
 Mahdollisia hakukriteereitä ensimmäiselle haulle ovat:
