@@ -200,9 +200,13 @@ Tässä ohjelmassa aikavaativuus on seuraava:
 Tilavaativuudelta ohjelma ei ole tehokas. Siinä käytetään useita erilaisia rakenteita ja taulukoita, ja ajan loppumisen vuoksi dynaamisesti varattujen muistialueiden vapautusta ei keretty toteuttamaan kaikilta osin.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Lähteet
 
 Koko projekti on toteutettu ChatGPT:tä apuna käyttäen. Hajautusfunktio on Bob Jenkins' One-At-A-Time hajautusfunktio joka on otettu wikipediasta.
+=======
+Koko projekti on toteutettu ChatGPT:tä apuna käyttäen.
+>>>>>>> 8b464deec0d879fc9d33824d68c20f22c3b5ed10
 =======
 Koko projekti on toteutettu ChatGPT:tä apuna käyttäen.
 >>>>>>> 8b464deec0d879fc9d33824d68c20f22c3b5ed10
