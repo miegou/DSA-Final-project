@@ -12,10 +12,9 @@ Tämän ohjelman tarkoituksena on demonstroida hajautustaulun käyttöä ja sen 
 
 #### Miksi päädyttiin hajautustauluun?
 
-Aluksi tehtiin avl puu, mutta ei saatu toimimaan kunnolla. 
+Aluksi lähdettiin toteuttamaan AVL-puuta, kun tiedettiin sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin. 
 
-Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia hakumenetelmiä olisi ja se antoi idean hajautustaulusta.
-Tämän jälkeen hajautustaulu tuntui kiinnostavalta ja nopealta vaihtoehdolta avl puulle.
+Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdettiin toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päätää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätettii tehdä ensin yksi kerroksinen hajaustustaulu jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi jotta rajaaminen olisi tehokkaampaa.
 
 
 ## Toiminta
@@ -154,28 +153,56 @@ graph TD;
 
 Ohjelma tarjoaa seuraavia toiminnallisuuksia käyttäjälle:
 
-- Arvon haku hajautustaulusta (`hae_arvoa_hajautustaulusta()`)
+- Kaikkien tuotteiden laskeminen csv-tiedostosta (`laske_rivien_lkm()`)
+- Rajattujen arvojen tulostus (`tulosta_arvot()`)
 - Erilaisten arvojen laskeminen hajautustaulusta (`laske_erilaiset_arvot()`)
 
-Muut toiminnallisuudet mitä ohjelma sisältää (ei käyttäjälle):
-
-- Hajautustaulun uudelleenjako (`jaa_hajautustaulu_uudelleen()`)
-- Erilaisten arvojen näyttäminen karsituista (`nayta_erilaiset_arvot_karsituista()`)
-- ArvoJnr-listan luominen (`luo_arvojnr_listasta()`)
-
-#### Pääohjelma
-
-Pääohjelma (`main.c()`) käynnistää ohjelman ja tarjoaa käyttöliittymän, josta käyttäjä voi valita haluamansa toiminnallisuuden.
-
 ## Käyttö
-
-1. Käynnistä ohjelma ja valitse haluamasi toiminto.
-2. Noudata ohjeita näytöllä.
+1. Käännä ohjelma tai käytä valmiiksi käännettyjä tiedostoja `main` ja `main.exe`.
+2. Käynnistä ohjelma terminaalissa ja noudata ohjeita näytöllä.
 
 ### ! HUOMIOITAVAA !
+Hajautustaulun koko on 160, joten kaikkia kriteereitä ei voida käyttää suoraan ennen, kun tuotteita on ensin rajattu muilla mahdollisilla haku kriteereillä.
 
-    ! Ohjelma on suunniteltu toimimaan CSV-tiedostojen kanssa.
-    ! Tiedoston lukemiseen ja hajautustaulun käyttöön on toteutettu erilliset moduulit.
-    ! Hajautustaulun koon muuttaminen voi vaikuttaa ohjelman suorituskykyyn.
+Mahdollisia hakukriteereitä ensimmäiselle haulle ovat:
+- Pullokoko
+- Tyyppi
+- Alatyyppi
+- Erityisryhmä
+- Oluttyyppi
+- Valmistusmaa
+- Alue
+- Vuosikerta
+- Huomautus
+- Pakkaustyyppi
+- Suljentatyyppi
+- Hapot g/l
+- Sokeri g/l
+- Väri EBC
+- Katkerot EBU
+- Energia kcal/100 ml
+- Valikoima
+
 
 ## Yhteenveto
+
+Vaikka tarkoitus oli vain esitellä kursilla opittua asiaa, niin lopputuloksena syntyi kuitenkin täysin käytettävä ohjelma. Projektissa haasteita aiheutti uuden ohjelmointi kielen käyttö, sekä ohjelman rakenteen suunnittelu. Tälläiseen ohjelmaan paras toteutus menetelmä olisi varmasti tietokanta, mutta projekti toteutettiin oppimisen näkökulmasta, eikä mietitty välttämättä kaikista tehokkainta ratkaisua. Ohjelmassa käytetään apuna hajautustauluja ja linkitettyjä listoja.
+
+Tässä ohjelmassa aikavaativuus on seuraava:
+- Tiedosto luetaan ja tallennetaan rakenteeseen käymällä läpi jokainen rivi kerran, joten tämä tapahtuu ajassa O(nm), missä n on sarakkeiden määrä ja m rivien määrä. Tämä on pisin lista, joka käydään läpi vie eniten aikaa ja se suoritetaan vain kerran.
+- Hajautustauluun lisäämisen aikavaativuus riippuu hashfunktion tehokkuudesta ja hajautustaulun koosta. Ensimmäisen rajauksen tekeminen käy uudestaan läpi koko listan, mutta vain halutusta sarakkeesta, jolloin aikavaativuus on enää O(n), koska kaikkia sarakkeita ei enää käydä läpi.
+    Jokaisen rivin verrattavan sarakkeen merkkijonolle lasketaan hash, joka tapahtuu ajassa O(n), missä n on merkkijonon pituus. Pöytään lisäys tapahtuu parhaimmassa tapauksessa ajassa O(1), jos törmäystä ei tapahdu. Pahimmassa tapauksessa hajautuspöytään lisäyksen aikavaativuus voi olla O(n), jossa n on hajautustaulun koko. Testi vaiheessa koodissa oli mukana funktio, joka tulosti lasketut hasharvot ja kun moduloidaan hajautustaulun koolla 160, ja hajautustaulun täyttöasteen ollessa noin puolet, niin samoja hasharvoja tuli alle viidelle eri nimikkeelle. Eli törmäysprosentti on maksimissaan 5% luokkaa.
+- Erilaisten arvojen luomisen aikavaativuus on O(n), missä on n on hajautustaulun koko. Tämä tehdään aina hajauttamisen jälkeen, jotta saadaan talteen todellinen indeksi jonne kyseiset nimikkeet tallentuivat, jos törmäyksiä syntyi.
+- Uudelleen hajauttaminen käyttää erilaisten arvojen rakenteita, jonka ansiosta oikean nimikkeen taulukosta hakemisen aikavaativuus on aina O(1). Ja uudelleen taulukkoon sijoittamisen aikavaativuus on sama kun ensimmäisellä kerralla.
+- Kun valikoidut tuotteet tulostetaan, niin siinäkin hyödynnetään erilaisten arvojen listaa ja oikean nimikkeen hakeminen taulusta tapahtuu taas aina ajassa O(1).
+     Ja niiden tulostus ajassa O(n), jossa n on valikoitujen tuotteiden linkitetyn listan pituus.
+
+Tilavaativuudelta ohjelma ei ole tehokas. Siinä käytetään useita erilaisia rakenteita ja taulukoita, ja ajan loppumisen vuoksi dynaamisesti varattujen muistialueiden vapautusta ei keretty toteuttamaan kaikilta osin.
+
+<<<<<<< HEAD
+## Lähteet
+
+Koko projekti on toteutettu ChatGPT:tä apuna käyttäen. Hajautusfunktio on Bob Jenkins' One-At-A-Time hajautusfunktio joka on otettu wikipediasta.
+=======
+Koko projekti on toteutettu ChatGPT:tä apuna käyttäen.
+>>>>>>> 8b464deec0d879fc9d33824d68c20f22c3b5ed10
