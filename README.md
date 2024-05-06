@@ -12,11 +12,9 @@ Tämän ohjelman tarkoituksena on demonstroida hajautustaulun käyttöä ja sen 
 
 #### Miksi päädyttiin hajautustauluun?
 
-Aluksi lähdettiin toteuttamaan AVL-puuta, kun tiedettiin sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin. 
-Aluksi lähdettiin toteuttamaan AVL-puuta, kun tiedettiin sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin. 
+Aluksi lähdimme toteuttamaan AVL-puuta, kun tiesimme sen toimivan tehokkaasti erilaisissa haku ja lajittelu tilanteissa, mutta C-kieli ei taipunut toteutukseen halutulla tavalla, joten ideasta luovuttiin.
 
-Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdettiin toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päätää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätettii tehdä ensin yksi kerroksinen hajaustustaulu jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi jotta rajaaminen olisi tehokkaampaa.
-Kyseltiin tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdettiin toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päätää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätettii tehdä ensin yksi kerroksinen hajaustustaulu jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi jotta rajaaminen olisi tehokkaampaa.
+Kyselimme tietoa ChatGPT:ltä, että mitä muita vaihtoehtosia menetelmiä olisi ja se antoi idean hajautustaulusta, joka toimisi myös nopeasti tälläisessä käytössä. Idea tuntui hyvältä ja lähdimme toteuttamaan sitä. Ohjelman toiminta olisi pitänyt miettiä ja päättää jo alussa, sillä nyt se muuttui matkan varrella monta kertaa, joka hidasti ohjelman tekemistä. Kun lopulta saatiin päätös siitä, miten ohjelman tulee toimia, niin päätimme tehdä ensin yksi kerroksinen hajaustustaulun, jolla pystyi hakemaan tiedot yhden kategorian perusteella. Kun tämä saatiin toimimaan, niin laajennettiin ohjelmaa, monikerroksiseksi hajautustauluksi, jotta rajaaminen olisi tehokkaampaa.
 
 
 ## Toiminta
